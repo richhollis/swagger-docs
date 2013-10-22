@@ -322,7 +322,8 @@ users.json output:
       ]
     }
   ]
-}```
+}
+```
 
 ## Contributing
 
