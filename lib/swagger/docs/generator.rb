@@ -45,18 +45,19 @@ module Swagger
         end
 
         def write_doc(api_version, config)
-          base_path = config[:controller_base_path]
+          base_path = config[:base_path]
+          controller_base_path = config[:controller_base_path]
           api_file_path = config[:api_file_path]
           results = {:processed => [], :skipped => []}
 
           FileUtils.mkdir_p(api_file_path) # recursively create out output path
           Dir.foreach(api_file_path) {|f| fn = File.join(api_file_path, f); File.delete(fn) if !File.directory?(fn)} # clean output path
 
-          header = { :api_version => api_version, :swagger_version => "1.2", :base_path => "/#{base_path}"}
+          header = { :api_version => api_version, :swagger_version => "1.2", :base_path => "#{base_path}/#{controller_base_path}"}
           resources = header.merge({:apis => []})
 
           paths = Rails.application.routes.routes.map{|i| "#{i.defaults[:controller]}" }
-          paths = paths.uniq.select{|i| i.start_with?(base_path)}
+          paths = paths.uniq.select{|i| i.start_with?(controller_base_path)}
           paths.each do |path|
             klass = "#{path.to_s.camelize}Controller".constantize
             if !klass.methods.include?(:swagger_config) or !klass.swagger_config[:controller]
@@ -71,7 +72,7 @@ module Swagger
               operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v] }] # rename :@instance hash keys
               operations[:method] = verb
               operations[:nickname] = "#{path.camelize}##{action}"
-              apis << {:path => get_api_path(route.path.spec).gsub("/#{base_path}",""), :operations => [operations]}
+              apis << {:path => get_api_path(route.path.spec).gsub("/#{controller_base_path}",""), :operations => [operations]}
             end
             demod = "#{path.to_s.camelize}".demodulize.camelize.underscore
             resource = header.merge({:resource_path => "/#{demod}", :apis => apis})

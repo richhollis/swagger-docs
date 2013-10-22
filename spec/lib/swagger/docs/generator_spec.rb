@@ -23,7 +23,7 @@ describe Swagger::Docs::Generator do
       stub_route("^DELETE$", "destroy", "api/v1/sample", "/api/v1/sample/:id(.:format)")
     ]
     @config = Swagger::Docs::Config.register_apis({
-      "1.0" => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/"}
+      "1.0" => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
     })
     Rails.stub_chain(:application, :routes, :routes).and_return(routes)
     Swagger::Docs::Generator.set_real_methods
@@ -65,7 +65,7 @@ describe Swagger::Docs::Generator do
         expect(response["swaggerVersion"]).to eq "1.2"
       end
       it "writes basePath correctly" do
-        expect(response["basePath"]).to eq "/api/v1"
+        expect(response["basePath"]).to eq "http://api.no.where/api/v1"
       end
       it "writes apis correctly" do
         expect(response["apis"].count).to eq 1
@@ -92,7 +92,7 @@ describe Swagger::Docs::Generator do
         expect(response["swaggerVersion"]).to eq "1.2"
       end
       it "writes basePath correctly" do
-        expect(response["basePath"]).to eq "/api/v1"
+        expect(response["basePath"]).to eq "http://api.no.where/api/v1"
       end
       it "writes resourcePath correctly" do
         expect(response["resourcePath"]).to eq "/sample"
