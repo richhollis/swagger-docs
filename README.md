@@ -49,7 +49,7 @@ Swagger::Docs::Config.register_apis({
 ### Documenting a controller
 
 ```
-class Api::V1::UsersController < ApiController
+class Api::V1::UsersController < ApplicationController
 
   swagger_controller :users, "User Management"
 
