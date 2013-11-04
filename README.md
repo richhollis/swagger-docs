@@ -39,9 +39,9 @@ Create an initializer in config/initializers (e.g. swagger_docs.rb) and define y
 ```
 Swagger::Docs::Config.register_apis({
   "1.0" => {
-    :controller_base_path => "api/v1",
-    :api_file_path => "public/api/v1/",
-    :base_path => "http://api.somedomain.com"
+    :api_file_path => "public/api/v1/", # the output location where your .json files are written to
+    :base_path => "http://api.somedomain.com", # the URL base path to your API 
+    :clean_directory => false # if you want to delete all .json files at each generation
   }
 )
 ```
@@ -105,7 +105,15 @@ end
 rake swagger:docs
 ```
 
-### Swagger-ui JSON files should now be present in your api_file_path (e.g. ./public/api/v1)
+Swagger-ui JSON files should now be present in your api_file_path (e.g. ./public/api/v1)
+
+### Sample 
+
+A sample Rails application where you can run the above rake command and view the output in swagger-ui can be found here:
+
+https://github.com/richhollis/swagger-docs-sample
+
+### Output files
 
 api-docs.json output:
 
