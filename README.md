@@ -113,6 +113,8 @@ A sample Rails application where you can run the above rake command and view the
 
 https://github.com/richhollis/swagger-docs-sample
 
+![Screen shot 1](https://github.com/richhollis/swagger-docs-sample/raw/master/swagger-docs-screenshot-2.png)
+
 ### Output files
 
 api-docs.json output:
