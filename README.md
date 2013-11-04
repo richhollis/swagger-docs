@@ -4,7 +4,7 @@ Generates swagger-ui json files for rails apps with APIs. You add the swagger DS
 
 Here is an extract of the DSL from a user controller API class:
 
-```
+```ruby
 swagger_controller :users, "User Management"
 
 swagger_api :index do
@@ -36,7 +36,7 @@ Or install it yourself as:
 
 Create an initializer in config/initializers (e.g. swagger_docs.rb) and define your APIs:
 
-```
+```ruby
 Swagger::Docs::Config.register_apis({
   "1.0" => {
     :api_file_path => "public/api/v1/", # the output location where your .json files are written to
@@ -48,7 +48,7 @@ Swagger::Docs::Config.register_apis({
 
 ### Documenting a controller
 
-```
+```ruby
 class Api::V1::UsersController < ApplicationController
 
   swagger_controller :users, "User Management"
@@ -118,7 +118,7 @@ https://github.com/richhollis/swagger-docs-sample
 api-docs.json output:
 
 
-```
+```json
 {
   "apiVersion": "1.0",
   "swaggerVersion": "1.2",
@@ -134,7 +134,7 @@ api-docs.json output:
 
 users.json output:
 
-```
+```json
 {
   "apiVersion": "1.0",
   "swaggerVersion": "1.2",
