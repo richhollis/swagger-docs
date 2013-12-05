@@ -45,7 +45,7 @@ module Swagger
       def response(status, text = nil, model = nil)
         if status.is_a? Symbol
           status_code = Rack::Utils.status_code(status)
-          response_messages << {:code => status_code, :message => status.to_s.titleize}
+          response_messages << {:code => status_code, :message => text || status.to_s.titleize}
         else
           response_messages << {:code => status, :message => text}
         end
