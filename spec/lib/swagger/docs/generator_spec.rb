@@ -218,6 +218,9 @@ describe Swagger::Docs::Generator do
             it "writes message correctly" do
               expect(response_msgs.first["message"]).to eq "Unauthorized"
             end
+            it "writes specified message correctly" do
+              expect(response_msgs[1]["message"]).to eq "The request you made is not acceptable"
+            end
           end
         end
       end

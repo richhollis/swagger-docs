@@ -8,7 +8,7 @@ module Api
         summary "Fetches all User items"
         param :query, :page, :integer, :optional, "Page number"
         response :unauthorized
-        response :not_acceptable
+        response :not_acceptable, "The request you made is not acceptable"
         response :requested_range_not_satisfiable
       end
 
