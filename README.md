@@ -46,7 +46,7 @@ Swagger::Docs::Config.register_apis({
     # if you want to delete all .json files at each generation
     :clean_directory => false 
   }
-)
+})
 ```
 
 ### Documenting a controller
