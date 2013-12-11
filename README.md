@@ -121,7 +121,7 @@ https://github.com/richhollis/swagger-docs-sample
 
 ### Common Tweaks
 
-## When not inheriting from ApplicationController
+#### When not inheriting from ApplicationController
 
 If your api controllers do not subclass from ApplicationController, use
 this snippet in your initializer _before_ calling Swagger::Docs::Config#register_apis(...).
@@ -150,7 +150,7 @@ namespace :assets do
 end
 ```
 
-#### Output files
+### Output files
 
 api-docs.json output:
 
