@@ -131,6 +131,22 @@ class Swagger::Docs::Config
 end
 ```
 
+### precompile
+
+It is best-practice to *not* keep documentation in version control. An easy way
+to integrate swagger-docs into a conventional deployment setup (e.g. capistrano,
+chef, or opsworks) is to piggyback on the 'assets:precompile' task.
+
+```ruby
+#Rakefile or lib/task/precompile_overrides.rake
+namespace :assets do
+  task :precompile do
+    Rake::Task['assets:precompile'].invoke
+    Rake::Task['swagger:docs'].invoke
+  end
+end
+```
+
 ### Output files
 
 api-docs.json output:
