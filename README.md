@@ -119,7 +119,9 @@ https://github.com/richhollis/swagger-docs-sample
 ![Screen shot 1](https://github.com/richhollis/swagger-docs-sample/raw/master/swagger-docs-screenshot-2.png)
 
 
-### Common tweaks
+### Common Tweaks
+
+## When not inheriting from ApplicationController
 
 If your api controllers do not subclass from ApplicationController, use
 this snippet in your initializer _before_ calling Swagger::Docs::Config#register_apis(...).
@@ -131,11 +133,12 @@ class Swagger::Docs::Config
 end
 ```
 
-### precompile
+## Precompile
 
 It is best-practice to *not* keep documentation in version control. An easy way
 to integrate swagger-docs into a conventional deployment setup (e.g. capistrano,
-chef, or opsworks) is to piggyback on the 'assets:precompile' task.
+chef, or opsworks) is to piggyback on the 'assets:precompile' task. And don't forget
+to add your api documentation directory to .gitignore in this case.
 
 ```ruby
 #Rakefile or lib/task/precompile_overrides.rake
