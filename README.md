@@ -133,7 +133,7 @@ class Swagger::Docs::Config
 end
 ```
 
-## Precompile
+#### Precompile
 
 It is best-practice to *not* keep documentation in version control. An easy way
 to integrate swagger-docs into a conventional deployment setup (e.g. capistrano,
@@ -150,7 +150,7 @@ namespace :assets do
 end
 ```
 
-### Output files
+#### Output files
 
 api-docs.json output:
 
