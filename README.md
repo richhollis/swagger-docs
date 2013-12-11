@@ -118,6 +118,27 @@ https://github.com/richhollis/swagger-docs-sample
 
 ![Screen shot 1](https://github.com/richhollis/swagger-docs-sample/raw/master/swagger-docs-screenshot-2.png)
 
+
+### Common tweaks
+
+If your api controllers do not subclass from ApplicationController, use
+this snippet in your initializer _before_ calling Swagger::Docs::Config#register_apis(...).
+
+
+```ruby
+class Swagger::Docs::Config
+  def self.register_apis(versions)
+    Api::ApiController.send(:include, Swagger::Docs::ImpotentMethods)
+    @versions = versions
+  end
+end
+class Swagger::Docs::Generator
+  def set_real_methods
+    Api::ApiController.send(:include, Methods) # replace impotent methods with live ones
+  end
+end
+```
+
 ### Output files
 
 api-docs.json output:
