@@ -2,8 +2,9 @@ module Swagger
   module Docs
     class Config
       class << self
+        def base_api_controller; ApplicationController end
         def register_apis(versions)
-          ApplicationController.send(:include, ImpotentMethods)
+          base_api_controller.send(:include, ImpotentMethods)
           @versions = versions
         end
         def registered_apis

@@ -46,7 +46,7 @@ Swagger::Docs::Config.register_apis({
     # if you want to delete all .json files at each generation
     :clean_directory => false 
   }
-)
+})
 ```
 
 ### Documenting a controller
@@ -117,6 +117,38 @@ A sample Rails application where you can run the above rake command and view the
 https://github.com/richhollis/swagger-docs-sample
 
 ![Screen shot 1](https://github.com/richhollis/swagger-docs-sample/raw/master/swagger-docs-screenshot-2.png)
+
+
+### Advanced Customization
+
+#### Inheriting from a custom Api controller
+
+By default swagger-docs is applied to controllers inheriting from ApplicationController. 
+If this is not the case for your application, use this snippet in your initializer 
+_before_ calling Swagger::Docs::Config#register_apis(...).
+
+```ruby
+class Swagger::Docs::Config
+  def self.base_api_controller; Api::ApiController end
+end
+```
+
+#### Precompile
+
+It is best-practice *not* to keep documentation in version control. An easy way
+to integrate swagger-docs into a conventional deployment setup (e.g. capistrano,
+chef, or opsworks) is to piggyback on the 'assets:precompile' rake task. And don't forget
+to add your api documentation directory to .gitignore in this case.
+
+```ruby
+#Rakefile or lib/task/precompile_overrides.rake
+namespace :assets do
+  task :precompile do
+    Rake::Task['assets:precompile'].invoke
+    Rake::Task['swagger:docs'].invoke
+  end
+end
+```
 
 ### Output files
 
