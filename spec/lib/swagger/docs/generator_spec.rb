@@ -126,6 +126,12 @@ describe Swagger::Docs::Generator do
         expect(results["1.0"][:processed].count).to eq 1
         expect(results["1.0"][:skipped].count).to eq 1
       end
+      it "writes pretty json files when set" do
+        config["1.0"][:formatting] = :pretty
+        generate(config)
+        resources = File.read FILE_RESOURCES
+        expect(resources.scan(/\n/).length).to be > 1
+      end
       context "resources files" do
         let(:resources) { File.read(FILE_RESOURCES)}
         let(:response) { JSON.parse(resources) }

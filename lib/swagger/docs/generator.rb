@@ -105,15 +105,23 @@ module Swagger
             resource = header.merge({:resource_path => "#{demod}", :apis => apis})
             camelize_keys_deep!(resource)
             # write controller resource file
-            File.open("#{api_file_path}/#{demod}.json", 'w') { |file| file.write(resource.to_json) }
+            write_to_file "#{api_file_path}/#{demod}.json", resource, config
             # append resource to resources array (for writing out at end)
             resources[:apis] << {path: "#{trim_leading_slash(debased_path)}.{format}", description: klass.swagger_config[:description]}
             results[:processed] << path
           end
           # write master resource file
           camelize_keys_deep!(resources)
-          File.open("#{api_file_path}/api-docs.json", 'w') { |file| file.write(resources.to_json) }
+
+          write_to_file "#{api_file_path}/api-docs.json", resources, config
           results
+        end
+        def write_to_file(path, structure, config={})
+          content = case config[:formatting]
+            when :pretty; JSON.pretty_generate structure
+            else;         structure.to_json
+          end
+          File.open(path, 'w') { |file| file.write content }
         end
       end
     end
