@@ -47,6 +47,27 @@ module Swagger
           trim_leading_slash(trim_trailing_slash(str))
         end
 
+        #TESTME
+        # removes overlap from  /api-docs/a/b/ and a/b/b/a.json
+        # returns /api-docs/a/b/b/a.json
+        def resource_path(path1, path2)
+          overlap = ""
+          
+          path2.chars.each_with_index do |char, i|
+            break unless path1[overlap+char]
+            overlap += char
+          end
+
+          remainder = path2.dup
+          remainder.slice! overlap
+          squish remainder
+        end
+        def squish(path)
+          path = path.dup
+          path.gsub!(/\/+/,"/")
+          path
+        end
+
         def set_real_methods
           ApplicationController.send(:include, Methods) # replace impotent methods with live ones
         end
@@ -91,7 +112,7 @@ module Swagger
               next
             end
             apis = []
-            debased_path = path.gsub("#{controller_base_path}", "")
+            debased_path = trim_leading_slash(controller_base_path ? path.gsub(controller_base_path, "") : path)
             Rails.application.routes.routes.select{|i| i.defaults[:controller] == path}.each do |route|
               action = route.defaults[:action]
               verb = route.verb.source.to_s.delete('$'+'^').downcase.to_sym
@@ -101,18 +122,21 @@ module Swagger
               operations[:nickname] = "#{path.camelize}##{action}"
               apis << {:path => trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s)).gsub("#{controller_base_path}","")), :operations => [operations]}
             end
-            demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
-            resource = header.merge({:resource_path => "#{demod}", :apis => apis})
+            resource_path = resource_path api_file_path, debased_path
+            resource = header.merge :resource_path => resource_path, :apis => apis
             camelize_keys_deep!(resource)
             # write controller resource file
-            File.open("#{api_file_path}/#{demod}.json", 'w') { |file| file.write(resource.to_json) }
+            expanded_resource_path = squish api_file_path+"#{resource_path}.json"
+            FileUtils.mkdir_p File.dirname(expanded_resource_path)
+            File.open(expanded_resource_path, 'w') { |file| file.write(resource.to_json) }
+
             # append resource to resources array (for writing out at end)
-            resources[:apis] << {path: "#{trim_leading_slash(debased_path)}.{format}", description: klass.swagger_config[:description]}
+            resources[:apis] << {path: "#{debased_path}.{format}", description: klass.swagger_config[:description]}
             results[:processed] << path
           end
           # write master resource file
           camelize_keys_deep!(resources)
-          File.open("#{api_file_path}/api-docs.json", 'w') { |file| file.write(resources.to_json) }
+          File.open("#{trim_trailing_slash api_file_path}/api-docs.json", 'w') { |file| file.write(resources.to_json) }
           results
         end
       end
