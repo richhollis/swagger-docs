@@ -1,7 +1,10 @@
 module Api
+  module Namespace
+  end
   module V1
-    class SampleController < ApplicationController
-
+    class SuperclassController < ApplicationController
+    end
+    class Namespace::SampleController < SuperclassController
       swagger_controller :users, "User Management"
 
       swagger_api :index do

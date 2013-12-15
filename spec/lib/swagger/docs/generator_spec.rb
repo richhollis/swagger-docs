@@ -1,5 +1,12 @@
 require 'spec_helper'
 
+module Api
+  module V1
+    module Namespace
+    end
+  end
+end
+
 describe Swagger::Docs::Generator do
 
   require "fixtures/controllers/application_controller"
@@ -21,12 +28,12 @@ describe Swagger::Docs::Generator do
   end
 
   let(:routes) {[
-    stub_route("^GET$", "index", "api/v1/ignored", "/api/v1/ignored(.:format)"),
-    stub_route("^GET$", "index", "api/v1/sample", "/api/v1/sample(.:format)"),
-    stub_route("^POST$", "create", "api/v1/sample", "/api/v1/sample(.:format)"),
-    stub_route("^GET$", "show", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
-    stub_route("^PUT$", "update", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
-    stub_route("^DELETE$", "destroy", "api/v1/sample", "/api/v1/sample/:id(.:format)")
+    stub_route("^GET$",    "index",   "api/v1/ignored",          "/api/v1/ignored(.:format)"),
+    stub_route("^GET$",    "index",   "api/v1/namespace/sample", "/api/v1/namespace/sample(.:format)"),
+    stub_route("^POST$",   "create",  "api/v1/namespace/sample", "/api/v1/namespace/sample(.:format)"),
+    stub_route("^GET$",    "show",    "api/v1/namespace/sample", "/api/v1/namespace/sample/:id(.:format)"),
+    stub_route("^PUT$",    "update",  "api/v1/namespace/sample", "/api/v1/namespace/sample/:id(.:format)"),
+    stub_route("^DELETE$", "destroy", "api/v1/namespace/sample", "/api/v1/namespace/sample/:id(.:format)")
   ]}
 
   context "without controller base path" do
@@ -36,7 +43,7 @@ describe Swagger::Docs::Generator do
     before(:each) do
       Rails.stub_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
-      require "fixtures/controllers/sample_controller"
+      require "fixtures/controllers/v1/namespace/sample_controller"
       generate(config)
     end
     context "resources files" do
@@ -49,7 +56,7 @@ describe Swagger::Docs::Generator do
         expect(response["apis"].count).to eq 1
       end
       it "writes api path correctly" do
-        expect(response["apis"][0]["path"]).to eq "api/v1/sample.{format}"
+        expect(response["apis"][0]["path"]).to eq "api/v1/namespace/sample.{format}"
       end
     end
     context "resource file" do
@@ -57,26 +64,48 @@ describe Swagger::Docs::Generator do
       let(:response) { JSON.parse(resource) }
       let(:first) { response["apis"].first }
       let(:operations) { first["operations"] }
-      # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
+      # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/namespace/sample"
       it "writes basePath correctly" do
         expect(response["basePath"]).to eq "http://api.no.where/"
       end
       it "writes resourcePath correctly" do
-        expect(response["resourcePath"]).to eq "sample"
+        expect(response["resourcePath"]).to eq "namespace/sample"
       end
       it "writes out expected api count" do
         expect(response["apis"].count).to eq 5
       end
       context "first api" do
-        #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
-        #,"method":"get","nickname":"Api::V1::Sample#index"}]
+        #"apis":[{"path":" /namespace/sample","operations":[{"summary":"Fetches all User items"
+        #,"method":"get","nickname":"Api::V1::Namespace::Sample#index"}]
         it "writes path correctly" do
-          expect(first["path"]).to eq "api/v1/sample"
+          expect(first["path"]).to eq "api/v1/namespace/sample"
         end
       end
     end
   end
-
+  context "with namespaced controllers" do
+    let(:routes) { ["namespace","namespace2"].each{|ns| stub_route("^GET$", "index", "api/v1/#{ns}/sample", "/api/v1/#{ns}/sample(.:format)") } }
+    let(:config) { Swagger::Docs::Config.register_apis({
+      "1.0" => {:api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
+    })}
+    before(:each) do 
+      Rails.stub_chain(:application, :routes, :routes).and_return(routes)
+      Swagger::Docs::Generator.set_real_methods
+      ["namespace","namespace2"].each{|ns| require "fixtures/controllers/#{ns}/sample_controller" }
+    end
+=begin
+    describe "#write_docs" do
+      before(:each) do
+        generate(config)
+      end
+      it "writes the resource files" do
+        expect(File.exists? FILE_RESOURCE).to be_true
+        expect(File.exists? FILE_RESOURCE.gsub("v1","v2")).to be_true
+      end
+    end
+=end
+  end
+ 
   context "with controller base path" do
     let(:config) { Swagger::Docs::Config.register_apis({
       "1.0" => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
@@ -84,7 +113,7 @@ describe Swagger::Docs::Generator do
     before(:each) do 
       Rails.stub_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
-      require "fixtures/controllers/sample_controller"
+      require "fixtures/controllers/v1/namespace/sample_controller"
     end
 
     context "test suite initialization" do
@@ -142,7 +171,7 @@ describe Swagger::Docs::Generator do
           expect(response["apis"].count).to eq 1
         end
         it "writes api path correctly" do
-          expect(response["apis"][0]["path"]).to eq "sample.{format}"
+          expect(response["apis"][0]["path"]).to eq "namespace/sample.{format}"
         end
         it "writes api description correctly" do
           expect(response["apis"][0]["description"]).to eq "User Management"
@@ -155,7 +184,7 @@ describe Swagger::Docs::Generator do
         let(:operations) { first["operations"] }
         let(:params) { operations.first["parameters"] }
         let(:response_msgs) { operations.first["responseMessages"] }
-        # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
+        # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/namespace/sample"
         it "writes version correctly" do
           expect(response["apiVersion"]).to eq "1.0"
         end
@@ -166,16 +195,16 @@ describe Swagger::Docs::Generator do
           expect(response["basePath"]).to eq "http://api.no.where/api/v1/"
         end
         it "writes resourcePath correctly" do
-          expect(response["resourcePath"]).to eq "sample"
+          expect(response["resourcePath"]).to eq "namespace/sample"
         end
         it "writes out expected api count" do
           expect(response["apis"].count).to eq 5
         end
         context "first api" do
-          #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
-          #,"method":"get","nickname":"Api::V1::Sample#index"}]
+          #"apis":[{"path":" /namespace/sample","operations":[{"summary":"Fetches all User items"
+          #,"method":"get","nickname":"Api::V1::Namespace::Sample#index"}]
           it "writes path correctly" do
-            expect(first["path"]).to eq "sample"
+            expect(first["path"]).to eq "namespace/sample"
           end
           it "writes summary correctly" do
             expect(operations.first["summary"]).to eq "Fetches all User items"
@@ -184,7 +213,7 @@ describe Swagger::Docs::Generator do
             expect(operations.first["method"]).to eq "get"
           end
           it "writes nickname correctly" do
-            expect(operations.first["nickname"]).to eq "Api::V1::Sample#index"
+            expect(operations.first["nickname"]).to eq "Api::V1::Namespace::Sample#index"
           end
           #"parameters":[{"paramType":"query","name":"page","type":"integer","description":"Page number","required":false}]
           context "parameters" do
