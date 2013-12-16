@@ -4,7 +4,6 @@ require "ostruct"
 require "json"
 require 'pathname'
 
-SPEC_HELPER_PRESENT = true
 DEFAULT_VER = Swagger::Docs::Generator::DEFAULT_VER
 
 TMP_DIR = Pathname.new "/tmp/swagger-docs/"

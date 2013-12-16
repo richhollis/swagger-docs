@@ -69,11 +69,8 @@ module Swagger
               config.reverse_merge!(DEFAULT_CONFIG)
               results[api_version] = write_doc(api_version, config)
             end
-            results[DEFAULT_VER][:default_config] = false
           else
-            puts "No swagger_docs config: Using default config #{DEFAULT_CONFIG}" unless defined?(SPEC_HELPER_PRESENT)
             results[DEFAULT_VER] = write_doc(DEFAULT_VER, DEFAULT_CONFIG)
-            results[DEFAULT_VER][:default_config] = true
           end
           results
         end

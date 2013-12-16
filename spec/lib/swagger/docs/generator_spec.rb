@@ -103,15 +103,13 @@ describe Swagger::Docs::Generator do
         before(:each) do 
           Swagger::Docs::Config.register_apis({})
         end
-        it "uses default config when not set" do
-          expect(Swagger::Docs::Generator.write_docs()[DEFAULT_VER][:default_config]).to be_true
+        it "generates using default config" do
+          results = generate({})
+          expect(results[DEFAULT_VER][:processed].count).to eq 1
         end
       end
       before(:each) do
         generate(config)
-      end
-      it "doesn't use default config" do
-        expect(Swagger::Docs::Generator.write_docs()[DEFAULT_VER][:default_config]).to be_false
       end
       it "cleans json files in directory when set" do
         file_to_delete = TMP_DIR+"api/v1/delete_me.json"
