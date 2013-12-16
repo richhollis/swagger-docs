@@ -83,8 +83,8 @@ The following table shows all the current configuration options and their defaul
 
 <tr>
 <td><b>formatting</b></td>
-<td>Specifies which formatting method to apply to the JSON that is written. Available options: pretty</td>
-<td></td>
+<td>Specifies which formatting method to apply to the JSON that is written. Available options: :none, :pretty</td>
+<td>:pretty</td>
 </tr>
 
 </tbody>

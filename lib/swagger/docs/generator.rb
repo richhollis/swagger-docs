@@ -1,6 +1,15 @@
 module Swagger
   module Docs
     class Generator
+
+      DEFAULT_VER = "1.0"
+      DEFAULT_CONFIG = {
+        :api_file_path => "public/", 
+        :base_path => "/", 
+        :clean_directory => false, 
+        :formatting => :pretty
+      }
+
       class << self
 
         def camelize_keys_deep!(h)
@@ -51,17 +60,20 @@ module Swagger
           Config.base_api_controller.send(:include, Methods) # replace impotent methods with live ones
         end
 
-        def write_docs(apis)
+        def write_docs(apis = nil)
+          apis ||= Config.registered_apis
           results = {}
           set_real_methods
-          unless Config.registered_apis.empty?
-            Config.registered_apis.each do |api_version,config|
+          unless apis.empty?
+            apis.each do |api_version,config|
+              config.reverse_merge!(DEFAULT_CONFIG)
               results[api_version] = write_doc(api_version, config)
             end
+            results[DEFAULT_VER][:default_config] = false
           else
-            config = {:api_file_path => "public/", :base_path => "/"}
-            puts "No swagger_docs config: Using default config #{config}"
-            results["1.0"] = write_doc("1.0", config)
+            puts "No swagger_docs config: Using default config #{DEFAULT_CONFIG}" unless defined?(SPEC_HELPER_PRESENT)
+            results[DEFAULT_VER] = write_doc(DEFAULT_VER, DEFAULT_CONFIG)
+            results[DEFAULT_VER][:default_config] = true
           end
           results
         end
@@ -116,6 +128,7 @@ module Swagger
           write_to_file "#{api_file_path}/api-docs.json", resources, config
           results
         end
+
         def write_to_file(path, structure, config={})
           content = case config[:formatting]
             when :pretty; JSON.pretty_generate structure

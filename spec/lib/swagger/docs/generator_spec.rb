@@ -30,9 +30,11 @@ describe Swagger::Docs::Generator do
   ]}
 
   context "without controller base path" do
-    let(:config) { Swagger::Docs::Config.register_apis({
-        "1.0" => {:api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
-      })}
+    let(:config) { 
+      {
+        DEFAULT_VER => {:api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
+      }
+    }
     before(:each) do
       Rails.stub_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
@@ -79,7 +81,7 @@ describe Swagger::Docs::Generator do
 
   context "with controller base path" do
     let(:config) { Swagger::Docs::Config.register_apis({
-      "1.0" => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
+      DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
     })}
     before(:each) do 
       Rails.stub_chain(:application, :routes, :routes).and_return(routes)
@@ -97,22 +99,32 @@ describe Swagger::Docs::Generator do
     end
 
     describe "#write_docs" do
+      context "no apis registered" do
+        before(:each) do 
+          Swagger::Docs::Config.register_apis({})
+        end
+        it "uses default config when not set" do
+          expect(Swagger::Docs::Generator.write_docs()[DEFAULT_VER][:default_config]).to be_true
+        end
+      end
       before(:each) do
         generate(config)
+      end
+      it "doesn't use default config" do
+        expect(Swagger::Docs::Generator.write_docs()[DEFAULT_VER][:default_config]).to be_false
       end
       it "cleans json files in directory when set" do
         file_to_delete = TMP_DIR+"api/v1/delete_me.json"
         File.open(file_to_delete, 'w') {|f| f.write("{}") }
         expect(file_to_delete).to exist
-
-        config["1.0"][:clean_directory] = true
+        config[DEFAULT_VER][:clean_directory] = true
         generate(config)
         expect(file_to_delete).to_not exist
       end
       it "keeps non json files in directory when cleaning" do
         file_to_keep = TMP_DIR+"api/v1/keep_me"
         File.open(file_to_keep, 'w') {|f| f.write("{}") }
-        config["1.0"][:clean_directory] = true
+        config[DEFAULT_VER][:clean_directory] = true
         generate(config)
         expect(file_to_keep).to exist
       end
@@ -124,11 +136,11 @@ describe Swagger::Docs::Generator do
       end
       it "returns results hash" do
         results = generate(config)
-        expect(results["1.0"][:processed].count).to eq 1
-        expect(results["1.0"][:skipped].count).to eq 1
+        expect(results[DEFAULT_VER][:processed].count).to eq 1
+        expect(results[DEFAULT_VER][:skipped].count).to eq 1
       end
       it "writes pretty json files when set" do
-        config["1.0"][:formatting] = :pretty
+        config[DEFAULT_VER][:formatting] = :pretty
         generate(config)
         resources = File.read FILE_RESOURCES
         expect(resources.scan(/\n/).length).to be > 1
@@ -137,7 +149,7 @@ describe Swagger::Docs::Generator do
         let(:resources) { FILE_RESOURCES.read }
         let(:response) { JSON.parse(resources) }
         it "writes version correctly" do
-          expect(response["apiVersion"]).to eq "1.0"
+          expect(response["apiVersion"]).to eq DEFAULT_VER
         end
         it "writes swaggerVersion correctly" do
           expect(response["swaggerVersion"]).to eq "1.2"
@@ -164,7 +176,7 @@ describe Swagger::Docs::Generator do
         let(:response_msgs) { operations.first["responseMessages"] }
         # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
         it "writes version correctly" do
-          expect(response["apiVersion"]).to eq "1.0"
+          expect(response["apiVersion"]).to eq DEFAULT_VER
         end
         it "writes swaggerVersion correctly" do
           expect(response["swaggerVersion"]).to eq "1.2"
