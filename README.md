@@ -49,6 +49,48 @@ Swagger::Docs::Config.register_apis({
 )
 ```
 
+#### Configuration options
+
+The following table shows all the current configuration options and their defaults. The default will be used if you don't supply your own value.
+
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<td><b>api_file_path</b></td>
+<td>The output file path where generated swagger-docs files are written to. </td>
+<td>public/</td>
+</tr>
+
+<tr>
+<td><b>base_path</b></td>
+<td>The URI base path for your API - e.g. api.somedomain.com</td>
+<td>/</td>
+</tr>
+
+<tr>
+<td><b>clean_directory</b></td>
+<td>When generating swagger-docs files this option specifies if the api_file_path should be cleaned first. This means that all files will be deleted in the output directory first before any files are generated.</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td><b>formatting</b></td>
+<td>Specifies which formatting method to apply to the JSON that is written. Available options: pretty</td>
+<td></td>
+</tr>
+
+</tbody>
+</table>
+
+
 ### Documenting a controller
 
 ```ruby
@@ -341,6 +383,10 @@ users.json output:
   ]
 }
 ```
+
+## Thanks to our contributors
+
+Thanks to @jdar and all our contributors.
 
 ## Contributing
 
