@@ -48,7 +48,7 @@ module Swagger
         end
 
         def set_real_methods
-          ApplicationController.send(:include, Methods) # replace impotent methods with live ones
+          Config.base_api_controller.send(:include, Methods) # replace impotent methods with live ones
         end
 
         def write_docs(apis)
