@@ -26,8 +26,9 @@ module Swagger
           end
         end
 
-        def get_api_path(spec, format)
-          path_api = trim_leading_slash(spec.to_s.gsub("(.:format)", ".#{format}"))
+        def get_api_path(spec, extension)
+          extension = ".#{extension}" if extension
+          path_api = trim_leading_slash(spec.to_s.gsub("(.:format)", extension.to_s))
           parts_new = []
           path_api.split("/").each do |path_part|
             part = path_part
