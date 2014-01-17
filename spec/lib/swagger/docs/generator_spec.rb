@@ -191,8 +191,13 @@ describe Swagger::Docs::Generator do
         context "first api" do
           #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
           #,"method":"get","nickname":"Api::V1::Sample#index"}]
-          it "writes path correctly" do
+          it "writes path correctly when api extension type is not set" do
             expect(first["path"]).to eq "sample"
+          end
+          it "writes path correctly when api extension type is set" do
+            config[DEFAULT_VER][:api_extension_type] = :json
+            generate(config)
+            expect(first["path"]).to eq "sample.json"
           end
           it "writes summary correctly" do
             expect(operations.first["summary"]).to eq "Fetches all User items"
