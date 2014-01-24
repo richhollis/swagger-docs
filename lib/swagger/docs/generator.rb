@@ -26,8 +26,9 @@ module Swagger
           end
         end
 
-        def get_api_path(spec)
-          path_api = trim_leading_slash(spec.to_s.gsub("(.:format)", ""))
+        def get_api_path(spec, extension)
+          extension = ".#{extension}" if extension
+          path_api = trim_leading_slash(spec.to_s.gsub("(.:format)", extension.to_s))
           parts_new = []
           path_api.split("/").each do |path_part|
             part = path_part
@@ -108,7 +109,7 @@ module Swagger
               operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v] }] # rename :@instance hash keys
               operations[:method] = verb
               operations[:nickname] = "#{path.camelize}##{action}"
-              apis << {:path => trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s)).gsub("#{controller_base_path}","")), :operations => [operations]}
+              apis << {:path => trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s), config[:api_extension_type]).gsub("#{controller_base_path}","")), :operations => [operations]}
             end
             demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
             resource = header.merge({:resource_path => "#{demod}", :apis => apis})
