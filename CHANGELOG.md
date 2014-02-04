@@ -8,6 +8,7 @@
 - Custom response message error text can now be set
 - Ability to override base controller with `base_api_controller` method
 - Default configuration for Generator
+- Fix typo in README.md
 
 ##0.0.3
 
