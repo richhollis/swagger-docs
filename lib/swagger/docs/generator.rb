@@ -117,7 +117,7 @@ module Swagger
             # write controller resource file
             write_to_file "#{api_file_path}/#{demod}.json", resource, config
             # append resource to resources array (for writing out at end)
-            resources[:apis] << {path: "#{trim_leading_slash(debased_path)}.{format}", description: klass.swagger_config[:description]}
+            resources[:apis] << {path: "#{Config.transform_path(trim_leading_slash(debased_path))}.{format}", description: klass.swagger_config[:description]}
             results[:processed] << path
           end
           # write master resource file
