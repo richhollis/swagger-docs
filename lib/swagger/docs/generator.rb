@@ -4,9 +4,9 @@ module Swagger
 
       DEFAULT_VER = "1.0"
       DEFAULT_CONFIG = {
-        :api_file_path => "public/", 
-        :base_path => "/", 
-        :clean_directory => false, 
+        :api_file_path => "public/",
+        :base_path => "/",
+        :clean_directory => false,
         :formatting => :pretty
       }
 
@@ -106,10 +106,12 @@ module Swagger
               action = route.defaults[:action]
               verb = route.verb.source.to_s.delete('$'+'^').downcase.to_sym
               next if !operations = klass.swagger_actions[action.to_sym]
-              operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v] }] # rename :@instance hash keys
+              operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v.respond_to?(:deep_dup) ? v.deep_dup : v.dup] }] # rename :@instance hash keys
               operations[:method] = verb
               operations[:nickname] = "#{path.camelize}##{action}"
-              apis << {:path => trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s), config[:api_extension_type]).gsub("#{controller_base_path}","")), :operations => [operations]}
+              api_path = trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s), config[:api_extension_type]).gsub("#{controller_base_path}",""))
+              operations[:parameters] = filter_path_params(api_path, operations[:parameters])
+              apis << {:path => api_path, :operations => [operations]}
             end
             demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
             resource = header.merge({:resource_path => "#{demod}", :apis => apis})
@@ -133,6 +135,15 @@ module Swagger
             else;         structure.to_json
           end
           File.open(path, 'w') { |file| file.write content }
+        end
+
+        private
+
+        def filter_path_params(path, params)
+          params.reject do |param|
+            param_as_variable = "{#{param[:name]}}"
+            param[:param_type] == :path && !path.include?(param_as_variable)
+          end
         end
       end
     end
