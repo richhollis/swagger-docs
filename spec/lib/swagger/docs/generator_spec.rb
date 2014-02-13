@@ -249,15 +249,6 @@ describe Swagger::Docs::Generator do
             end
           end
         end
-
-        context "second api (nested)" do
-          let(:api) { response["apis"][1] }
-          context "parameters" do
-            it "has correct count" do
-              expect(first_params.count).to eq 2
-            end
-          end
-        end
       end
     end
   end
