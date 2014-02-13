@@ -170,8 +170,8 @@ describe Swagger::Docs::Generator do
         let(:resource) { FILE_RESOURCE.read }
         let(:response) { JSON.parse(resource) }
         let(:operations) { api["operations"] }
-        let(:params) { operations.first["parameters"] }
-        let(:response_msgs) { operations.first["responseMessages"] }
+        let(:first_params) { operations.first["parameters"] }
+        let(:first_response_msgs) { operations.first["responseMessages"] }
         # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
         it "writes version correctly" do
           expect(response["apiVersion"]).to eq DEFAULT_VER
@@ -190,7 +190,6 @@ describe Swagger::Docs::Generator do
         end
         context "first api" do
           let(:api) { response["apis"][0] }
-
           #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
           #,"method":"get","nickname":"Api::V1::Sample#index"}]
           it "writes path correctly when api extension type is not set" do
@@ -210,40 +209,43 @@ describe Swagger::Docs::Generator do
           it "writes nickname correctly" do
             expect(operations.first["nickname"]).to eq "Api::V1::Sample#index"
           end
-          #"parameters":[{"paramType":"query","name":"page","type":"integer","description":"Page number","required":false}]
+          #"parameters"=>[
+          # {"paramType"=>"query", "name"=>"page", "type"=>"integer", "description"=>"Page number", "required"=>false},
+          # {"paramType"=>"path", "name"=>"nested_id", "type"=>"integer", "description"=>"Team Id", "required"=>false}], "responseMessages"=>[{"code"=>401, "message"=>"Unauthorized"}, {"code"=>406, "message"=>"The request you made is not acceptable"}, {"code"=>416, "message"=>"Requested Range Not Satisfiable"}], "method"=>"get", "nickname"=>"Api::V1::Sample#index"}
+          #]
           context "parameters" do
             it "has correct count" do
-              expect(params.count).to eq 1
+              expect(first_params.count).to eq 2
             end
             it "writes paramType correctly" do
-              expect(params.first["paramType"]).to eq "query"
+              expect(first_params.first["paramType"]).to eq "query"
             end
             it "writes name correctly" do
-              expect(params.first["name"]).to eq "page"
+              expect(first_params.first["name"]).to eq "page"
             end
             it "writes type correctly" do
-              expect(params.first["type"]).to eq "integer"
+              expect(first_params.first["type"]).to eq "integer"
             end
             it "writes description correctly" do
-              expect(params.first["description"]).to eq "Page number"
+              expect(first_params.first["description"]).to eq "Page number"
             end
             it "writes required correctly" do
-              expect(params.first["required"]).to be_false
+              expect(first_params.first["required"]).to be_false
             end
           end
           #"responseMessages":[{"code":401,"message":"Unauthorized"},{"code":406,"message":"Not Acceptable"},{"code":416,"message":"Requested Range Not Satisfiable"}]
           context "response messages" do
             it "has correct count" do
-              expect(response_msgs.count).to eq 3
+              expect(first_response_msgs.count).to eq 3
             end
             it "writes code correctly" do
-              expect(response_msgs.first["code"]).to eq 401
+              expect(first_response_msgs.first["code"]).to eq 401
             end
             it "writes message correctly" do
-              expect(response_msgs.first["message"]).to eq "Unauthorized"
+              expect(first_response_msgs.first["message"]).to eq "Unauthorized"
             end
             it "writes specified message correctly" do
-              expect(response_msgs[1]["message"]).to eq "The request you made is not acceptable"
+              expect(first_response_msgs[1]["message"]).to eq "The request you made is not acceptable"
             end
           end
         end
@@ -252,7 +254,7 @@ describe Swagger::Docs::Generator do
           let(:api) { response["apis"][1] }
           context "parameters" do
             it "has correct count" do
-              expect(params.count).to eq 2
+              expect(first_params.count).to eq 2
             end
           end
         end
