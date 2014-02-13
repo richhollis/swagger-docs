@@ -183,6 +183,22 @@ class Swagger::Docs::Config
 end
 ```
 
+#### Transforming the `path` variable
+
+Swagger allows a distinction between the API documentation server and the hosted API
+server through the `path` variable (see [Swagger: No server Integrations](https://github.com/wordnik/swagger-core/wiki/No-server-Integrations)). To override the default swagger-docs behavior, you can provide a `transform_path`
+class method in your initializer:
+
+```ruby
+class Swagger::Docs::Config
+  def self.transform_path(path)
+    "http://example.com/api-docs/#{path}"
+  end
+end
+```
+
+The transformation will be applied to all API `path` values in the generated `api-docs.json` file.
+
 #### Precompile
 
 It is best-practice *not* to keep documentation in version control. An easy way
