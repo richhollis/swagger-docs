@@ -1,3 +1,7 @@
+## 0.1.1
+- Add support for Rails engines (@fotinakis)
+- Filter out path parameters if the parameter is not in the path (@stevschmid)
+
 ## 0.1.0
 
 - Add CHANGELOG.md
