@@ -29,7 +29,7 @@ module Swagger
           @swagger_dsl ||= {}
           controller_action = "#{name}##{action} #{self.class}"
           return if @swagger_dsl[action]
-          route = Rails.application.routes.routes.select{|i| "#{i.defaults[:controller].to_s.camelize}Controller##{i.defaults[:action]}" == controller_action }.first
+          route = Swagger::Docs::Config.base_application.routes.routes.select{|i| "#{i.defaults[:controller].to_s.camelize}Controller##{i.defaults[:action]}" == controller_action }.first
           dsl = SwaggerDSL.call(action, self, &block)
           @swagger_dsl[action] = dsl
         end

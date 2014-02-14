@@ -91,7 +91,7 @@ module Swagger
           header = { :api_version => api_version, :swagger_version => "1.2", :base_path => base_path + "/"}
           resources = header.merge({:apis => []})
 
-          paths = Rails.application.routes.routes.map{|i| "#{i.defaults[:controller]}" }
+          paths = Config.base_application.routes.routes.map{|i| "#{i.defaults[:controller]}" }
           paths = paths.uniq.select{|i| i.start_with?(controller_base_path)}
           paths.each do |path|
             next if path.empty?
@@ -102,7 +102,7 @@ module Swagger
             end
             apis = []
             debased_path = path.gsub("#{controller_base_path}", "")
-            Rails.application.routes.routes.select{|i| i.defaults[:controller] == path}.each do |route|
+            Config.base_application.routes.routes.select{|i| i.defaults[:controller] == path}.each do |route|
               action = route.defaults[:action]
               verb = route.verb.source.to_s.delete('$'+'^').downcase.to_sym
               next if !operations = klass.swagger_actions[action.to_sym]

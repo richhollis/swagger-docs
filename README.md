@@ -183,6 +183,17 @@ class Swagger::Docs::Config
 end
 ```
 
+#### Custom route discovery for supporting Rails Engines
+
+By default, swagger-docs finds controllers by traversing routes in `Rails.application`.
+To override this, you can customize the `base_application` config in an initializer:
+
+```ruby
+class Swagger::Docs::Config
+  def self.base_application; Api::Engine end
+end
+```
+
 #### Precompile
 
 It is best-practice *not* to keep documentation in version control. An easy way
