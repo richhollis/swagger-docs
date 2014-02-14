@@ -183,7 +183,6 @@ class Swagger::Docs::Config
 end
 ```
 
-<<<<<<< HEAD
 #### Custom route discovery for supporting Rails Engines
 
 By default, swagger-docs finds controllers by traversing routes in `Rails.application`.
