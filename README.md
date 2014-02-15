@@ -42,11 +42,11 @@ Swagger::Docs::Config.register_apis({
     # the extension used for the API
     :api_extension_type => :json,
     # the output location where your .json files are written to
-    :api_file_path => "public/api/v1/", 
-    # the URL base path to your API 
-    :base_path => "http://api.somedomain.com", 
+    :api_file_path => "public/api/v1/",
+    # the URL base path to your API
+    :base_path => "http://api.somedomain.com",
     # if you want to delete all .json files at each generation
-    :clean_directory => false 
+    :clean_directory => false
   }
 })
 ```
@@ -160,7 +160,7 @@ rake swagger:docs
 
 Swagger-ui JSON files should now be present in your api_file_path (e.g. ./public/api/v1)
 
-### Sample 
+### Sample
 
 A sample Rails application where you can run the above rake command and view the output in swagger-ui can be found here:
 
@@ -173,8 +173,8 @@ https://github.com/richhollis/swagger-docs-sample
 
 #### Inheriting from a custom Api controller
 
-By default swagger-docs is applied to controllers inheriting from ApplicationController. 
-If this is not the case for your application, use this snippet in your initializer 
+By default swagger-docs is applied to controllers inheriting from ApplicationController.
+If this is not the case for your application, use this snippet in your initializer
 _before_ calling Swagger::Docs::Config#register_apis(...).
 
 ```ruby
@@ -194,7 +194,6 @@ class Swagger::Docs::Config
 end
 ```
 
-=======
 #### Transforming the `path` variable
 
 Swagger allows a distinction between the API documentation server and the hosted API
