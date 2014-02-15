@@ -16,7 +16,7 @@ module Swagger
         end
 
         def swagger_models
-          @swagger_model_dsls
+          @swagger_model_dsls ||= {}
         end
 
         def swagger_config
