@@ -281,7 +281,7 @@ describe Swagger::Docs::Generator do
               "properties" => {
                 "name" => {
                   "type" => "string",
-                  "description"=>"Name",
+                  "description" => "Name",
                   "foo" => "test",
                 },
                 "id" => {
