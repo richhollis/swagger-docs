@@ -109,8 +109,9 @@ class Api::V1::UsersController < ApplicationController
   swagger_api :index do
     summary "Fetches all User items"
     param :query, :page, :integer, :optional, "Page number"
+    param :path, :nested_id, :integer, :optional, "Team Id"
     response :unauthorized
-    response :not_acceptable
+    response :not_acceptable, "The request you made is not acceptable"
     response :requested_range_not_satisfiable
   end
 
@@ -137,6 +138,7 @@ class Api::V1::UsersController < ApplicationController
     param :form, :first_name, :string, :optional, "First name"
     param :form, :last_name, :string, :optional, "Last name"
     param :form, :email, :string, :optional, "Email address"
+    param :form, :tag, :Tag, :required, "Tag object"
     response :unauthorized
     response :not_found
     response :not_acceptable
@@ -147,6 +149,14 @@ class Api::V1::UsersController < ApplicationController
     param :path, :id, :integer, :optional, "User Id"
     response :unauthorized
     response :not_found
+  end
+
+  # Support for Swagger complex types:
+  # https://github.com/wordnik/swagger-core/wiki/Datatypes#wiki-complex-types
+  swagger_model :Tag do
+    description "A Tag object."
+    property :id, :integer, :required, "User Id"
+    property :name, :string, :optional, "Name"
   end
 
 end
@@ -252,7 +262,7 @@ users.json output:
 {
   "apiVersion": "1.0",
   "swaggerVersion": "1.2",
-  "basePath": "/api/v1",
+  "basePath": "http://api.somedomain.com/api/v1/",
   "resourcePath": "/users",
   "apis": [
     {
@@ -276,7 +286,47 @@ users.json output:
             },
             {
               "code": 406,
-              "message": "Not Acceptable"
+              "message": "The request you made is not acceptable"
+            },
+            {
+              "code": 416,
+              "message": "Requested Range Not Satisfiable"
+            }
+          ],
+          "method": "get",
+          "nickname": "Api::V1::Users#index"
+        }
+      ]
+    },
+    {
+      "path": "nested/{nested_id}/sample",
+      "operations": [
+        {
+          "summary": "Fetches all User items",
+          "parameters": [
+            {
+              "paramType": "query",
+              "name": "page",
+              "type": "integer",
+              "description": "Page number",
+              "required": false
+            },
+            {
+              "paramType": "path",
+              "name": "nested_id",
+              "type": "integer",
+              "description": "Team Id",
+              "required": false
+            }
+          ],
+          "responseMessages": [
+            {
+              "code": 401,
+              "message": "Unauthorized"
+            },
+            {
+              "code": 406,
+              "message": "The request you made is not acceptable"
             },
             {
               "code": 416,
@@ -397,6 +447,13 @@ users.json output:
               "type": "string",
               "description": "Email address",
               "required": false
+            },
+            {
+              "paramType": "form",
+              "name": "tag",
+              "type": "Tag",
+              "description": "Tag object",
+              "required": true
             }
           ],
           "responseMessages": [
@@ -447,7 +504,27 @@ users.json output:
         }
       ]
     }
-  ]
+  ],
+  "models": {
+    "Tag": {
+      "id": "Tag",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "User Id"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name",
+          "foo": "test"
+        }
+      },
+      "description": "A Tag object."
+    }
+  }
 }
 ```
 

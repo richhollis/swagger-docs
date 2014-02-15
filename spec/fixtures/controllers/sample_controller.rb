@@ -50,6 +50,8 @@ module Api
         response :not_found
       end
 
+      # Support for Swagger complex types:
+      # https://github.com/wordnik/swagger-core/wiki/Datatypes#wiki-complex-types
       swagger_model :Tag do
         description "A Tag object."
         property :id, :integer, :required, "User Id"
