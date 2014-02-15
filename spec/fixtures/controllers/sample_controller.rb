@@ -37,6 +37,7 @@ module Api
         param :form, :first_name, :string, :optional, "First name"
         param :form, :last_name, :string, :optional, "Last name"
         param :form, :email, :string, :optional, "Email address"
+        param :form, :tag, :Tag, :required, "Tag object"
         response :unauthorized
         response :not_found
         response :not_acceptable
@@ -49,6 +50,11 @@ module Api
         response :not_found
       end
 
+      swagger_model :Tag do
+        description "A Tag object."
+        property :id, :integer, :required, "User Id"
+        property :name, :string, :optional, "Name", foo: "test"
+      end
     end
   end
 end

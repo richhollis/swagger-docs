@@ -11,12 +11,12 @@ module Swagger
           swagger_config[:description] = description
         end
 
-        def swagger_model(model)
-          swagger_config[:model] = model
-        end
-
         def swagger_actions
           @swagger_dsl
+        end
+
+        def swagger_models
+          @swagger_model_dsls
         end
 
         def swagger_config
@@ -32,6 +32,12 @@ module Swagger
           route = Swagger::Docs::Config.base_application.routes.routes.select{|i| "#{i.defaults[:controller].to_s.camelize}Controller##{i.defaults[:action]}" == controller_action }.first
           dsl = SwaggerDSL.call(action, self, &block)
           @swagger_dsl[action] = dsl
+        end
+
+        def swagger_model(model_name, &block)
+          @swagger_model_dsls ||= {}
+          model_dsl = SwaggerModelDSL.call(model_name, self, &block)
+          @swagger_model_dsls[model_name] = model_dsl
         end
       end
     end

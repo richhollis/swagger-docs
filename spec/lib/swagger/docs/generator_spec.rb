@@ -31,7 +31,7 @@ describe Swagger::Docs::Generator do
   ]}
 
   context "without controller base path" do
-    let(:config) { 
+    let(:config) {
       {
         DEFAULT_VER => {:api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
       }
@@ -84,7 +84,7 @@ describe Swagger::Docs::Generator do
     let(:config) { Swagger::Docs::Config.register_apis({
       DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
     })}
-    before(:each) do 
+    before(:each) do
       Rails.stub_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
       require "fixtures/controllers/sample_controller"
@@ -101,7 +101,7 @@ describe Swagger::Docs::Generator do
 
     describe "#write_docs" do
       context "no apis registered" do
-        before(:each) do 
+        before(:each) do
           Swagger::Docs::Config.register_apis({})
         end
         it "generates using default config" do
@@ -255,6 +255,42 @@ describe Swagger::Docs::Generator do
             it "has correct count" do
               expect(params.count).to eq 2
             end
+          end
+        end
+        context "update api" do
+          let(:api) { response["apis"][4] }
+          it "writes model param correctly" do
+            expected_param = {
+              "paramType" => "form",
+              "name" => "tag",
+              "type" => "Tag",
+              "description" => "Tag object",
+              "required" => true,
+            }
+            expect(params.last).to eq expected_param
+          end
+        end
+        context "models" do
+          let(:models) { response["models"] }
+          # Based on https://github.com/wordnik/swagger-core/wiki/Datatypes
+          it "writes model correctly" do
+            expected_model = {
+              "id" => "Tag",
+              "required" => ["id"],
+              "description" => "A Tag object.",
+              "properties" => {
+                "name" => {
+                  "type" => "string",
+                  "description"=>"Name",
+                  "foo" => "test",
+                },
+                "id" => {
+                  "type" => "integer",
+                  "description" => "User Id",
+                }
+              }
+            }
+            expect(models['Tag']).to eq expected_model
           end
         end
       end
