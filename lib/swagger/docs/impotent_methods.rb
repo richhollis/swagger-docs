@@ -12,6 +12,9 @@ module Swagger
         def swagger_api(action, &block)
         end
 
+        def swagger_model(model_name, &block)
+        end
+
         def swagger_controller(controller, description)
         end
       end
