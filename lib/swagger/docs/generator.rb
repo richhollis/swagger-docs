@@ -27,7 +27,7 @@ module Swagger
         end
 
         def transform_spec_to_api_path(spec, controller_base_path, extension)
-          api_path = spec.dup
+          api_path = spec.to_s.dup
           api_path.gsub!('(.:format)', extension ? ".#{extension}" : '')
           api_path.gsub!(/:(\w+)/, '{\1}')
           api_path.gsub!(controller_base_path, '')
