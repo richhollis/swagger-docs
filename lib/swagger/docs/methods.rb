@@ -27,9 +27,7 @@ module Swagger
 
         def swagger_api(action, &block)
           @swagger_dsl ||= {}
-          controller_action = "#{name}##{action} #{self.class}"
           return if @swagger_dsl[action]
-          route = Swagger::Docs::Config.base_application.routes.routes.select{|i| "#{i.defaults[:controller].to_s.camelize}Controller##{i.defaults[:action]}" == controller_action }.first
           dsl = SwaggerDSL.call(action, self, &block)
           @swagger_dsl[action] = dsl
         end
