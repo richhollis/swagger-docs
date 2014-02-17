@@ -110,7 +110,7 @@ module Swagger
               operations[:method] = verb
               operations[:nickname] = "#{path.camelize}##{action}"
               api_path = trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s), config[:api_extension_type]).gsub("#{controller_base_path}",""))
-              operations[:parameters] = filter_path_params(api_path, operations[:parameters])
+              operations[:parameters] = filter_path_params(api_path, operations[:parameters]) if operations[:parameters]
               apis << {:path => api_path, :operations => [operations]}
             end
             demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore

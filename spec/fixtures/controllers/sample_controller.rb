@@ -49,6 +49,10 @@ module Api
         response :not_found
       end
 
+      swagger_api :new do
+        summary "Builds a new User item"
+      end
+
     end
   end
 end

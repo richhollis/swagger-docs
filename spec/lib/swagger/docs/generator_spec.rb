@@ -27,11 +27,12 @@ describe Swagger::Docs::Generator do
     stub_route("^POST$", "create", "api/v1/sample", "/api/v1/sample(.:format)"),
     stub_route("^GET$", "show", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
     stub_route("^PUT$", "update", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
-    stub_route("^DELETE$", "destroy", "api/v1/sample", "/api/v1/sample/:id(.:format)")
+    stub_route("^DELETE$", "destroy", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
+    stub_route("^GET$", "new", "api/v1/sample", "/api/v1/sample/new(.:format)")
   ]}
 
   context "without controller base path" do
-    let(:config) { 
+    let(:config) {
       {
         DEFAULT_VER => {:api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
       }
@@ -68,7 +69,7 @@ describe Swagger::Docs::Generator do
         expect(response["resourcePath"]).to eq "sample"
       end
       it "writes out expected api count" do
-        expect(response["apis"].count).to eq 6
+        expect(response["apis"].count).to eq 7
       end
       context "first api" do
         #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
@@ -84,7 +85,7 @@ describe Swagger::Docs::Generator do
     let(:config) { Swagger::Docs::Config.register_apis({
       DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
     })}
-    before(:each) do 
+    before(:each) do
       Rails.stub_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
       require "fixtures/controllers/sample_controller"
@@ -101,7 +102,7 @@ describe Swagger::Docs::Generator do
 
     describe "#write_docs" do
       context "no apis registered" do
-        before(:each) do 
+        before(:each) do
           Swagger::Docs::Config.register_apis({})
         end
         it "generates using default config" do
@@ -186,7 +187,7 @@ describe Swagger::Docs::Generator do
           expect(response["resourcePath"]).to eq "sample"
         end
         it "writes out expected api count" do
-          expect(response["apis"].count).to eq 6
+          expect(response["apis"].count).to eq 7
         end
         context "first api" do
           let(:api) { response["apis"][0] }
