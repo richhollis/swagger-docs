@@ -17,7 +17,7 @@ describe Swagger::Docs::Generator do
   end
 
   before(:each) do
-    FileUtils.rm_rf(TMP_DIR)
+    FileUtils.rm_rf(tmp_dir)
   end
 
   let(:routes) {[
@@ -30,10 +30,14 @@ describe Swagger::Docs::Generator do
     stub_route("^DELETE$", "destroy", "api/v1/sample", "/api/v1/sample/:id(.:format)")
   ]}
 
+  let(:tmp_dir) { Pathname.new('/tmp/swagger-docs/') }
+  let(:file_resources) { tmp_dir + 'api-docs.json' }
+  let(:file_resource) { tmp_dir + 'api/v1/sample.json' }
+
   context "without controller base path" do
-    let(:config) { 
+    let(:config) {
       {
-        DEFAULT_VER => {:api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
+        DEFAULT_VER => {:api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where"}
       }
     }
     before(:each) do
@@ -43,7 +47,7 @@ describe Swagger::Docs::Generator do
       generate(config)
     end
     context "resources files" do
-      let(:resources) { FILE_RESOURCES.read }
+      let(:resources) { file_resources.read }
       let(:response) { JSON.parse(resources) }
       it "writes basePath correctly" do
         expect(response["basePath"]).to eq "http://api.no.where/"
@@ -56,16 +60,15 @@ describe Swagger::Docs::Generator do
       end
     end
     context "resource file" do
-      let(:resource) { FILE_RESOURCE.read }
+      let(:resource) { file_resource.read }
       let(:response) { JSON.parse(resource) }
       let(:first) { response["apis"].first }
       let(:operations) { first["operations"] }
-      # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
       it "writes basePath correctly" do
         expect(response["basePath"]).to eq "http://api.no.where/"
       end
       it "writes resourcePath correctly" do
-        expect(response["resourcePath"]).to eq "sample"
+        expect(response["resourcePath"]).to eq "api/v1/sample"
       end
       it "writes out expected api count" do
         expect(response["apis"].count).to eq 6
@@ -82,9 +85,11 @@ describe Swagger::Docs::Generator do
 
   context "with controller base path" do
     let(:config) { Swagger::Docs::Config.register_apis({
-      DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
+      DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where"}
     })}
-    before(:each) do 
+    let(:file_resource) { tmp_dir + 'sample.json' }
+
+    before(:each) do
       Rails.stub_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
       require "fixtures/controllers/sample_controller"
@@ -92,16 +97,16 @@ describe Swagger::Docs::Generator do
 
     context "test suite initialization" do
       it "the resources file does not exist" do
-        expect(FILE_RESOURCES).to_not exist
+        expect(file_resources).to_not exist
       end
       it "the resource file does not exist" do
-        expect(FILE_RESOURCE).to_not exist
+        expect(file_resource).to_not exist
       end
     end
 
     describe "#write_docs" do
       context "no apis registered" do
-        before(:each) do 
+        before(:each) do
           Swagger::Docs::Config.register_apis({})
         end
         it "generates using default config" do
@@ -113,7 +118,7 @@ describe Swagger::Docs::Generator do
         generate(config)
       end
       it "cleans json files in directory when set" do
-        file_to_delete = TMP_DIR+"api/v1/delete_me.json"
+        file_to_delete = Pathname.new(File.join(config['1.0'][:api_file_path], 'delete_me.json'))
         File.open(file_to_delete, 'w') {|f| f.write("{}") }
         expect(file_to_delete).to exist
         config[DEFAULT_VER][:clean_directory] = true
@@ -121,17 +126,17 @@ describe Swagger::Docs::Generator do
         expect(file_to_delete).to_not exist
       end
       it "keeps non json files in directory when cleaning" do
-        file_to_keep = TMP_DIR+"api/v1/keep_me"
+        file_to_keep = Pathname.new(File.join(config['1.0'][:api_file_path], 'keep_me'))
         File.open(file_to_keep, 'w') {|f| f.write("{}") }
         config[DEFAULT_VER][:clean_directory] = true
         generate(config)
         expect(file_to_keep).to exist
       end
       it "writes the resources file" do
-        expect(FILE_RESOURCES).to exist
+        expect(file_resources).to exist
       end
       it "writes the resource file" do
-        expect(FILE_RESOURCE).to exist
+        expect(file_resource).to exist
       end
       it "returns results hash" do
         results = generate(config)
@@ -141,11 +146,11 @@ describe Swagger::Docs::Generator do
       it "writes pretty json files when set" do
         config[DEFAULT_VER][:formatting] = :pretty
         generate(config)
-        resources = File.read FILE_RESOURCES
+        resources = File.read file_resources
         expect(resources.scan(/\n/).length).to be > 1
       end
       context "resources files" do
-        let(:resources) { FILE_RESOURCES.read }
+        let(:resources) { file_resources.read }
         let(:response) { JSON.parse(resources) }
         it "writes version correctly" do
           expect(response["apiVersion"]).to eq DEFAULT_VER
@@ -167,7 +172,7 @@ describe Swagger::Docs::Generator do
         end
       end
       context "resource file" do
-        let(:resource) { FILE_RESOURCE.read }
+        let(:resource) { file_resource.read }
         let(:response) { JSON.parse(resource) }
         let(:operations) { api["operations"] }
         let(:params) { operations.first["parameters"] }
