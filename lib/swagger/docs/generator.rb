@@ -27,18 +27,18 @@ module Swagger
         end
 
         def get_api_path(spec, extension)
-          extension = ".#{extension}" if extension
-          path_api = trim_leading_slash(spec.to_s.gsub("(.:format)", extension.to_s))
-          parts_new = []
-          path_api.split("/").each do |path_part|
-            part = path_part
-            if part[0] == ":"
-              part[0] = "{"
-              part << "}"
+          clean_path = trim_leading_slash(spec.to_s)
+          format = clean_path.chomp!('(.:format)')
+
+          clean_path.split("/").map do |segment|
+            if segment.start_with? ':'
+              "{#{ segment[1..-1] }}"
+            else
+              segment
             end
-            parts_new << part
+          end.join('/').tap do |path|
+            path << ".#{ extension }" if extension && format
           end
-          path_api = parts_new*"/"
         end
 
         def trim_leading_slash(str)

@@ -18,6 +18,7 @@ describe Swagger::Docs::Generator do
 
   before(:each) do
     FileUtils.rm_rf(TMP_DIR)
+    stub_const('ActionController::Base', ApplicationController)
   end
 
   let(:routes) {[
@@ -31,7 +32,7 @@ describe Swagger::Docs::Generator do
   ]}
 
   context "without controller base path" do
-    let(:config) { 
+    let(:config) {
       {
         DEFAULT_VER => {:api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
       }
@@ -84,7 +85,7 @@ describe Swagger::Docs::Generator do
     let(:config) { Swagger::Docs::Config.register_apis({
       DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{TMP_DIR}api/v1/", :base_path => "http://api.no.where"}
     })}
-    before(:each) do 
+    before(:each) do
       Rails.stub_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
       require "fixtures/controllers/sample_controller"
@@ -101,7 +102,7 @@ describe Swagger::Docs::Generator do
 
     describe "#write_docs" do
       context "no apis registered" do
-        before(:each) do 
+        before(:each) do
           Swagger::Docs::Config.register_apis({})
         end
         it "generates using default config" do
@@ -258,6 +259,12 @@ describe Swagger::Docs::Generator do
           end
         end
       end
+    end
+  end
+
+  describe '::get_api_path' do
+    it 'correctly handles route with format' do
+      expect(described_class.get_api_path("foos/:id(.:format)", "json")).to eq "foos/{id}.json"
     end
   end
 end
