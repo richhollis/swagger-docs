@@ -260,4 +260,10 @@ describe Swagger::Docs::Generator do
       end
     end
   end
+
+  describe '::get_api_path' do
+    it 'correctly handles route with format' do
+      expect(described_class.get_api_path("foos/:id(.:format)", "json")).to eq "foos/{id}.json"
+    end
+  end
 end
