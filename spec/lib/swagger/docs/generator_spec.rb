@@ -257,6 +257,20 @@ describe Swagger::Docs::Generator do
             end
           end
         end
+        context "with json set as extension type" do
+          before(:each) do
+            config[DEFAULT_VER][:api_extension_type] = :json
+            generate(config)
+          end
+          context "show api" do
+            let(:api) { response["apis"][3] }
+            context "parameters" do
+              it "has correct count" do
+                expect(params.count).to eq 1
+              end
+            end
+          end
+        end
       end
     end
   end

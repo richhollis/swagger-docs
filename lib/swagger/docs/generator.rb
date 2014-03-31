@@ -110,7 +110,7 @@ module Swagger
               operations[:method] = verb
               operations[:nickname] = "#{path.camelize}##{action}"
               api_path = trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s), config[:api_extension_type]).gsub("#{controller_base_path}",""))
-              operations[:parameters] = filter_path_params(api_path, operations[:parameters])
+              operations[:parameters] = filter_path_params(api_path, operations[:parameters], config[:api_extension_type])
               apis << {:path => api_path, :operations => [operations]}
             end
             demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
@@ -139,10 +139,10 @@ module Swagger
 
         private
 
-        def filter_path_params(path, params)
+        def filter_path_params(path, params, extension)
           params.reject do |param|
-            param_as_variable = "{#{param[:name]}}"
-            param[:param_type] == :path && !path.include?(param_as_variable)
+            param_as_regex = /\{#{Regexp.escape(param[:name])}(\.#{extension})?\}/
+            param[:param_type] == :path && !(path =~ param_as_regex)
           end
         end
       end
