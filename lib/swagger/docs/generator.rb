@@ -117,12 +117,13 @@ module Swagger
         def create_resource_file(path, apis, models, settings, root, config)
           debased_path = get_debased_path(path, settings[:controller_base_path])
           demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
+          resource_path = trim_leading_slash(debased_path.to_s.underscore)
           resource = root.merge({:resource_path => "#{demod}", :apis => apis})
           camelize_keys_deep!(resource)
           # Add the already-normalized models to the resource.
           resource = resource.merge({:models => models}) if models.present?
           # write controller resource file
-          write_to_file "#{settings[:api_file_path]}/#{demod}.json", resource, config
+          write_to_file(File.join(settings[:api_file_path], "#{resource_path}.json"), resource, config)
         end
 
         def get_route_path_apis(path, route, klass, settings, config)
@@ -191,6 +192,7 @@ module Swagger
             when :pretty; JSON.pretty_generate structure
             else;         structure.to_json
           end
+          FileUtils.mkdir_p File.dirname(path)
           File.open(path, 'w') { |file| file.write content }
         end
 
