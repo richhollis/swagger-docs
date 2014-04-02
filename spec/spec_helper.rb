@@ -17,3 +17,33 @@ RSpec.configure do |config|
   end
   config.color_enabled = true
 end
+
+def generate(config)
+    Swagger::Docs::Generator::write_docs(config)
+end
+
+def stub_route(verb, action, controller, spec)
+  double("route", :verb => double("verb", :source => verb),
+    :defaults => {:action => action, :controller => controller},
+    :path => double("path", :spec => spec)
+  )
+end
+
+def get_api_paths(apis, path)
+  apis.select{|api| api["path"] == path}
+end
+
+def get_api_operations(apis, path)
+  apis = get_api_paths(apis, path)
+  apis.collect{|api| api["operations"]}.flatten
+end
+
+def get_api_operation(apis, path, method)
+  operations = get_api_operations(apis, path)
+  operations.each{|operation| return operation if operation["method"] == method.to_s}
+end
+
+def get_api_parameter(api, name)
+  api["parameters"].each{|param| return param if param["name"] == name}
+end
+

@@ -38,6 +38,12 @@ module Swagger
           :description => description, :required => required == :required ? true : false}.merge(hash)
       end
 
+      # helper method to generate enums
+      def param_list(param_type, name, type, required, description = nil, allowed_values = [], hash = {})
+        hash.merge!({allowable_values: {value_type: "LIST", values: allowed_values}})
+        param(param_type, name, type, required, description = nil, hash)
+      end
+
       def response_messages
         @response_messages ||= []
       end

@@ -27,6 +27,7 @@ module Api
         param :form, :first_name, :string, :required, "First name"
         param :form, :last_name, :string, :required, "Last name"
         param :form, :email, :string, :required, "Email address"
+        param_list :form, :role, :string, :required, "Role", [ "admin", "superadmin", "user" ]
         response :unauthorized
         response :not_acceptable
       end

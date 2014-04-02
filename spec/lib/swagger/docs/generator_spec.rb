@@ -5,17 +5,6 @@ describe Swagger::Docs::Generator do
   require "fixtures/controllers/application_controller"
   require "fixtures/controllers/ignored_controller"
 
-  def generate(config)
-    Swagger::Docs::Generator::write_docs(config)
-  end
-
-  def stub_route(verb, action, controller, spec)
-    double("route", :verb => double("verb", :source => verb),
-                  :defaults => {:action => action, :controller => controller},
-                  :path => double("path", :spec => spec)
-    )
-  end
-
   before(:each) do
     FileUtils.rm_rf(TMP_DIR)
     stub_const('ActionController::Base', ApplicationController)
@@ -171,9 +160,7 @@ describe Swagger::Docs::Generator do
       context "resource file" do
         let(:resource) { FILE_RESOURCE.read }
         let(:response) { JSON.parse(resource) }
-        let(:operations) { api["operations"] }
-        let(:params) { operations.first["parameters"] }
-        let(:response_msgs) { operations.first["responseMessages"] }
+        let(:apis) { response["apis"] }
         # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
         it "writes version correctly" do
           expect(response["apiVersion"]).to eq DEFAULT_VER
@@ -190,86 +177,99 @@ describe Swagger::Docs::Generator do
         it "writes out expected api count" do
           expect(response["apis"].count).to eq 7
         end
-        context "first api" do
-          let(:api) { response["apis"][0] }
-          #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
-          #,"method":"get","nickname":"Api::V1::Sample#index"}]
-          it "writes path correctly when api extension type is not set" do
-            expect(api["path"]).to eq "sample"
-          end
-          it "writes path correctly when api extension type is set" do
-            config[DEFAULT_VER][:api_extension_type] = :json
-            generate(config)
-            expect(api["path"]).to eq "sample.json"
-          end
-          it "writes summary correctly" do
-            expect(operations.first["summary"]).to eq "Fetches all User items"
-          end
-          it "writes method correctly" do
-            expect(operations.first["method"]).to eq "get"
-          end
-          it "writes nickname correctly" do
-            expect(operations.first["nickname"]).to eq "Api::V1::Sample#index"
-          end
-          #"parameters"=>[
-          # {"paramType"=>"query", "name"=>"page", "type"=>"integer", "description"=>"Page number", "required"=>false},
-          # {"paramType"=>"path", "name"=>"nested_id", "type"=>"integer", "description"=>"Team Id", "required"=>false}], "responseMessages"=>[{"code"=>401, "message"=>"Unauthorized"}, {"code"=>406, "message"=>"The request you made is not acceptable"}, {"code"=>416, "message"=>"Requested Range Not Satisfiable"}], "method"=>"get", "nickname"=>"Api::V1::Sample#index"}
-          #]
-          context "parameters" do
-            it "has correct count" do
-              expect(params.count).to eq 1
+        context "apis" do
+          context "index" do
+            let(:api) { get_api_operation(apis, "sample", :get) }
+            let(:operations) { get_api_operations(apis, "sample") }
+            #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
+            #,"method":"get","nickname":"Api::V1::Sample#index"}]
+            it "writes path correctly when api extension type is not set" do
+              expect(apis.first["path"]).to eq "sample"
             end
-            it "writes paramType correctly" do
-              expect(params.first["paramType"]).to eq "query"
+            it "writes path correctly when api extension type is set" do
+              config[DEFAULT_VER][:api_extension_type] = :json
+              generate(config)
+              expect(apis.first["path"]).to eq "sample.json"
             end
-            it "writes name correctly" do
-              expect(params.first["name"]).to eq "page"
+            it "writes summary correctly" do
+              expect(operations.first["summary"]).to eq "Fetches all User items"
             end
-            it "writes type correctly" do
-              expect(params.first["type"]).to eq "integer"
+            it "writes method correctly" do
+              expect(operations.first["method"]).to eq "get"
             end
-            it "writes description correctly" do
-              expect(params.first["description"]).to eq "Page number"
+            it "writes nickname correctly" do
+              expect(operations.first["nickname"]).to eq "Api::V1::Sample#index"
             end
-            it "writes required correctly" do
-              expect(params.first["required"]).to be_false
+            #"parameters"=>[
+            # {"paramType"=>"query", "name"=>"page", "type"=>"integer", "description"=>"Page number", "required"=>false},
+            # {"paramType"=>"path", "name"=>"nested_id", "type"=>"integer", "description"=>"Team Id", "required"=>false}], "responseMessages"=>[{"code"=>401, "message"=>"Unauthorized"}, {"code"=>406, "message"=>"The request you made is not acceptable"}, {"code"=>416, "message"=>"Requested Range Not Satisfiable"}], "method"=>"get", "nickname"=>"Api::V1::Sample#index"}
+            #]
+            context "parameters" do
+              let(:params) { operations.first["parameters"] }
+              it "has correct count" do
+                expect(params.count).to eq 1
+              end
+              it "writes paramType correctly" do
+                expect(params.first["paramType"]).to eq "query"
+              end
+              it "writes name correctly" do
+                expect(params.first["name"]).to eq "page"
+              end
+              it "writes type correctly" do
+                expect(params.first["type"]).to eq "integer"
+              end
+              it "writes description correctly" do
+                expect(params.first["description"]).to eq "Page number"
+              end
+              it "writes required correctly" do
+                expect(params.first["required"]).to be_false
+              end
             end
-          end
-          #"responseMessages":[{"code":401,"message":"Unauthorized"},{"code":406,"message":"Not Acceptable"},{"code":416,"message":"Requested Range Not Satisfiable"}]
-          context "response messages" do
-            it "has correct count" do
-              expect(response_msgs.count).to eq 3
-            end
-            it "writes code correctly" do
-              expect(response_msgs.first["code"]).to eq 401
-            end
-            it "writes message correctly" do
-              expect(response_msgs.first["message"]).to eq "Unauthorized"
-            end
-            it "writes specified message correctly" do
-              expect(response_msgs[1]["message"]).to eq "The request you made is not acceptable"
-            end
-          end
-        end
-        context "second api (nested)" do
-          let(:api) { response["apis"][1] }
-          context "parameters" do
-            it "has correct count" do
-              expect(params.count).to eq 2
+            #"responseMessages":[{"code":401,"message":"Unauthorized"},{"code":406,"message":"Not Acceptable"},{"code":416,"message":"Requested Range Not Satisfiable"}]
+            context "response messages" do
+              let(:response_msgs) { operations.first["responseMessages"] }
+              it "has correct count" do
+                expect(response_msgs.count).to eq 3
+              end
+              it "writes code correctly" do
+                expect(response_msgs.first["code"]).to eq 401
+              end
+              it "writes message correctly" do
+                expect(response_msgs.first["message"]).to eq "Unauthorized"
+              end
+              it "writes specified message correctly" do
+                expect(response_msgs[1]["message"]).to eq "The request you made is not acceptable"
+              end
             end
           end
-        end
-        context "update api" do
-          let(:api) { response["apis"][4] }
-          it "writes model param correctly" do
-            expected_param = {
-              "paramType" => "form",
-              "name" => "tag",
-              "type" => "Tag",
-              "description" => "Tag object",
-              "required" => true,
-            }
-            expect(params.last).to eq expected_param
+          context "show" do
+            let(:api) { get_api_operation(apis, "nested/{nested_id}/sample", :get) }
+            let(:operations) { get_api_operations(apis, "nested/{nested_id}/sample") }
+            context "parameters" do
+              it "has correct count" do
+                expect(api["parameters"].count).to eq 2
+              end
+            end
+          end
+          context "create" do
+            let(:api) { get_api_operation(apis, "sample", :post) }
+            it "writes list parameter values correctly" do
+              expected_param = {"valueType"=>"LIST", "values"=>["admin", "superadmin", "user"]}
+              expect(get_api_parameter(api, "role")["allowableValues"]).to eq expected_param
+            end
+          end
+          context "update" do
+            let(:api) { get_api_operation(apis, "sample/{id}", :put) }
+            it "writes model param correctly" do
+              expected_param = {
+                "paramType" => "form",
+                "name" => "tag",
+                "type" => "Tag",
+                "description" => "Tag object",
+                "required" => true,
+              }
+              expect(get_api_parameter(api, "tag")).to eq expected_param
+            end
           end
         end
         context "models" do
