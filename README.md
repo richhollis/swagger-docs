@@ -162,6 +162,8 @@ class Api::V1::UsersController < ApplicationController
 end
 ```
 
+`response` takes a symbol or status code and passes it to `Rack::Utils.status_code`. The current list of status codes can be seen here: https://github.com/rack/rack/blob/master/lib/rack/utils.rb.
+
 ### Run rake task to generate docs
 
 ```
