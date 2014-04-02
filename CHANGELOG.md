@@ -1,3 +1,13 @@
+## 0.1.2
+- Add suport for Swagger models
+- Use ActionControlller::Base instead of ApplicationController. fixes #27
+- Status codes for response
+- Path generation fixes #26 @stevschmid
+- Ignore path filtering when no params are set
+- Add param_list helper for generating enums/lists
+- Improve structure of generator class - break up large methods
+- Fix the destination path of the resource files #30
+
 ## 0.1.1
 - Add support for Rails engines (@fotinakis)
 - Filter out path parameters if the parameter is not in the path (@stevschmid)
