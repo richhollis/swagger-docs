@@ -258,6 +258,42 @@ describe Swagger::Docs::Generator do
             end
           end
         end
+        context "update api" do
+          let(:api) { response["apis"][4] }
+          it "writes model param correctly" do
+            expected_param = {
+              "paramType" => "form",
+              "name" => "tag",
+              "type" => "Tag",
+              "description" => "Tag object",
+              "required" => true,
+            }
+            expect(params.last).to eq expected_param
+          end
+        end
+        context "models" do
+          let(:models) { response["models"] }
+          # Based on https://github.com/wordnik/swagger-core/wiki/Datatypes
+          it "writes model correctly" do
+            expected_model = {
+              "id" => "Tag",
+              "required" => ["id"],
+              "description" => "A Tag object.",
+              "properties" => {
+                "name" => {
+                  "type" => "string",
+                  "description" => "Name",
+                  "foo" => "test",
+                },
+                "id" => {
+                  "type" => "integer",
+                  "description" => "User Id",
+                }
+              }
+            }
+            expect(models['Tag']).to eq expected_model
+          end
+        end
       end
     end
   end

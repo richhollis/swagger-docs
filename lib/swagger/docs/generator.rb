@@ -88,8 +88,8 @@ module Swagger
           Dir.foreach(api_file_path) {|f| fn = File.join(api_file_path, f); File.delete(fn) if !File.directory?(fn) and File.extname(fn) == '.json'} if clean_directory # clean output path
 
           base_path += "/#{controller_base_path}" unless controller_base_path.empty?
-          header = { :api_version => api_version, :swagger_version => "1.2", :base_path => base_path + "/"}
-          resources = header.merge({:apis => []})
+          root = { :api_version => api_version, :swagger_version => "1.2", :base_path => base_path + "/"}
+          resources = root.merge({:apis => []})
 
           paths = Config.base_application.routes.routes.map{|i| "#{i.defaults[:controller]}" }
           paths = paths.uniq.select{|i| i.start_with?(controller_base_path)}
@@ -101,6 +101,7 @@ module Swagger
               next
             end
             apis = []
+            models = {}
             debased_path = path.gsub("#{controller_base_path}", "")
             Config.base_application.routes.routes.select{|i| i.defaults[:controller] == path}.each do |route|
               action = route.defaults[:action]
@@ -112,14 +113,31 @@ module Swagger
               api_path = trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s), config[:api_extension_type]).gsub("#{controller_base_path}",""))
               operations[:parameters] = filter_path_params(api_path, operations[:parameters])
               apis << {:path => api_path, :operations => [operations]}
+
+              # Add any declared models to the root of the resource.
+              klass.swagger_models.each do |model_name, model|
+                formatted_model = {
+                  id: model[:id],
+                  required: model[:required],
+                  properties: model[:properties],
+                }
+                formatted_model[:description] = model[:description] if model[:description]
+                models[model[:id]] = formatted_model
+              end
             end
             demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
-            resource = header.merge({:resource_path => "#{demod}", :apis => apis})
+            resource = root.merge({:resource_path => "#{demod}", :apis => apis})
             camelize_keys_deep!(resource)
+
+            # Add the already-normalized models to the resource.
+            resource = resource.merge({:models => models}) if models.present?
             # write controller resource file
             write_to_file "#{api_file_path}/#{demod}.json", resource, config
             # append resource to resources array (for writing out at end)
-            resources[:apis] << {path: "#{Config.transform_path(trim_leading_slash(debased_path))}.{format}", description: klass.swagger_config[:description]}
+            resources[:apis] << {
+              path: "#{Config.transform_path(trim_leading_slash(debased_path))}.{format}",
+              description: klass.swagger_config[:description]
+            }
             results[:processed] << path
           end
           # write master resource file
