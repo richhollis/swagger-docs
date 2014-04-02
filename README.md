@@ -128,6 +128,7 @@ class Api::V1::UsersController < ApplicationController
     param :form, :first_name, :string, :required, "First name"
     param :form, :last_name, :string, :required, "Last name"
     param :form, :email, :string, :required, "Email address"
+    param_list :form, :role, :string, :required, "Role", [ "admin", "superadmin", "user" ]
     response :unauthorized
     response :not_acceptable
   end
@@ -162,7 +163,39 @@ class Api::V1::UsersController < ApplicationController
 end
 ```
 
-`response` takes a symbol or status code and passes it to `Rack::Utils.status_code`. The current list of status codes can be seen here: https://github.com/rack/rack/blob/master/lib/rack/utils.rb.
+### DSL Methods
+
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<td>summary</td>
+<td>The summary of the API</td>
+</tr>
+
+<tr>
+<td>param</td>
+<td>Standard API Parameter</td>
+</tr>
+
+<tr>
+<td>param_list</td>
+<td>Standard API Enum/List parameter.</td>
+</tr>
+
+<tr>
+<td>response</td>
+<td>Takes a symbol or status code and passes it to `Rack::Utils.status_code`. The current list of status codes can be seen here: https://github.com/rack/rack/blob/master/lib/rack/utils.rb. An optional message can be added.</td>
+</tr>
+
+</tbody>
+</table>
 
 ### Run rake task to generate docs
 
