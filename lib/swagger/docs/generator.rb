@@ -26,31 +26,22 @@ module Swagger
           end
         end
 
-        def get_api_path(spec, extension)
-          extension = ".#{extension}" if extension
-          path_api = trim_leading_slash(spec.to_s.gsub("(.:format)", extension.to_s))
-          parts_new = []
-          path_api.split("/").each do |path_part|
-            part = path_part
-            if part[0] == ":"
-              part[0] = "{"
-              part << "}"
-            end
-            parts_new << part
+        def transform_spec_to_api_path(spec, controller_base_path, extension)
+           api_path = spec.to_s.dup
+           api_path.gsub!('(.:format)', extension ? ".#{extension}" : '')
+           api_path.gsub!(/:(\w+)/, '{\1}')
+           api_path.gsub!(controller_base_path, '')
+           trim_slashes(api_path)
           end
-          path_api = parts_new*"/"
-        end
 
         def trim_leading_slash(str)
           return str if !str
-          return str unless str[0] == '/'
-          str[1..-1]
+          str.gsub(/\A\/+/, '')
         end
 
         def trim_trailing_slash(str)
           return str if !str
-          return str unless str[-1] == '/'
-          str[0..-2]
+          str.gsub(/\/+\z/, '')
         end
 
         def trim_slashes(str)
@@ -110,8 +101,10 @@ module Swagger
               operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v.respond_to?(:deep_dup) ? v.deep_dup : v.dup] }] # rename :@instance hash keys
               operations[:method] = verb
               operations[:nickname] = "#{path.camelize}##{action}"
-              api_path = trim_slashes(get_api_path(trim_leading_slash(route.path.spec.to_s), config[:api_extension_type]).gsub("#{controller_base_path}",""))
-              operations[:parameters] = filter_path_params(api_path, operations[:parameters])
+              
+              api_path = transform_spec_to_api_path(route.path.spec, controller_base_path, config[:api_extension_type])
+              operations[:parameters] = filter_path_params(api_path, operations[:parameters]) if operations[:parameters]
+
               apis << {:path => api_path, :operations => [operations]}
 
               # Add any declared models to the root of the resource.
