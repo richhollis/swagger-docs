@@ -1,3 +1,6 @@
+## 0.1.3
+- Fix issue where empty path throws error
+
 ## 0.1.2
 - Add suport for Swagger models
 - Use ActionControlller::Base instead of ApplicationController. fixes #27

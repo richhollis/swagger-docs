@@ -102,9 +102,10 @@ module Swagger
         end
 
         def process_path(path, root, config, settings)
-          return {action: empty} if path.empty?
-          klass = "#{path.to_s.camelize}Controller".constantize
-          return {action: :skipped, path: path} if !klass.methods.include?(:swagger_config) or !klass.swagger_config[:controller]
+          return {action: :skipped, reason: :empty_path} if path.empty?
+          klass = "#{path.to_s.camelize}Controller".constantize rescue nil
+          return {action: :skipped, path: path, reason: :klass_not_present} if !klass
+          return {action: :skipped, path: path, reason: :not_swagger_resource} if !klass.methods.include?(:swagger_config) or !klass.swagger_config[:controller]
           apis, models = [], {}
           Config.base_application.routes.routes.select{|i| i.defaults[:controller] == path}.each do |route|
             ret = get_route_path_apis(path, route, klass, settings, config)
