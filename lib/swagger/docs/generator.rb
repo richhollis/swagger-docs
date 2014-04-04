@@ -131,7 +131,7 @@ module Swagger
           models, apis = {}, []
           action = route.defaults[:action]
           verb = route.verb.source.to_s.delete('$'+'^').downcase.to_sym
-          return apis if !operations = klass.swagger_actions[action.to_sym]
+          return {apis: apis, models: models} if !operations = klass.swagger_actions[action.to_sym]
           operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v.respond_to?(:deep_dup) ? v.deep_dup : v.dup] }] # rename :@instance hash keys
           operations[:method] = verb
           operations[:nickname] = "#{path.camelize}##{action}"
