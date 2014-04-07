@@ -27,9 +27,9 @@ module Swagger
 
         def swagger_api(action, &block)
           @swagger_dsl ||= {}
-          return if @swagger_dsl[action]
           dsl = SwaggerDSL.call(action, self, &block)
-          @swagger_dsl[action] = dsl
+          @swagger_dsl[action] ||= {}
+          @swagger_dsl[action].deep_merge!(dsl) { |key, old, new| Array(old) + Array(new) }
         end
 
         def swagger_model(model_name, &block)

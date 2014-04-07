@@ -10,7 +10,13 @@ module Api
         param :query, :page, :integer, :optional, "Page number"
         param :path, :nested_id, :integer, :optional, "Team Id"
         response :unauthorized
+      end
+
+      swagger_api :index do
         response :not_acceptable, "The request you made is not acceptable"
+      end
+
+      swagger_api :index do
         response :requested_range_not_satisfiable
       end
 
