@@ -17,34 +17,56 @@ module Swagger
         end
 
         def write_docs(apis = nil)
-          apis ||= Config.registered_apis
-          results = {}
-          set_real_methods
-          unless apis.empty?
-            apis.each do |api_version,config|
-              config.reverse_merge!(DEFAULT_CONFIG)
-              results[api_version] = write_doc(api_version, config)
-            end
-          else
-            results[DEFAULT_VER] = write_doc(DEFAULT_VER, DEFAULT_CONFIG)
+          results = generate_docs(apis)
+          results.each do |api_version, result|
+            write_doc(result)
           end
           results
         end
 
-        def write_doc(api_version, config)
-          settings = get_settings(api_version, config)
-
+        def write_doc(result)
+          settings = result[:settings]
+          config = result[:config]
           create_output_paths(settings[:api_file_path])
           clean_output_paths(settings[:api_file_path]) if config[:clean_directory] || false
+          root = result[:root]
+          resources = root.delete 'resources'
+          write_to_file("#{settings[:api_file_path]}/api-docs.json", root, config)
+          resources.each do |resource|
+            resource_file_path = resource.delete 'resourceFilePath'
+            write_to_file(File.join(settings[:api_file_path], "#{resource_file_path}.json"), resource, config)
+          end
+          result
+        end
 
+        def generate_docs(apis=nil)
+          apis ||= Config.registered_apis
+          results = {}
+          set_real_methods
+
+          apis[DEFAULT_VER] = DEFAULT_CONFIG if apis.empty?
+
+          apis.each do |api_version, config|
+            settings = get_settings(api_version, config)
+            config.reverse_merge!(DEFAULT_CONFIG)
+            results[api_version] = generate_doc(api_version, settings, config)
+            results[api_version][:settings] = settings
+            results[api_version][:config] = config
+          end
+          results
+        end
+
+        def generate_doc(api_version, settings, config)
           root = { :api_version => api_version, :swagger_version => "1.2", :base_path => settings[:base_path] + "/", :apis => []}
           results = {:processed => [], :skipped => []}
+          resources = []
 
           get_route_paths(settings[:controller_base_path]).each do |path|
             ret = process_path(path, root, config, settings)
             results[ret[:action]] << ret
             if ret[:action] == :processed
-              create_resource_file(ret[:path], ret[:apis], ret[:models], settings, root, config)
+              resource = generate_resource(ret[:path], ret[:apis], ret[:models], settings, root, config)
+              resources << resource
               debased_path = get_debased_path(ret[:path], settings[:controller_base_path])
               resource_api = {
                 path: "#{Config.transform_path(trim_leading_slash(debased_path))}.{format}",
@@ -53,9 +75,9 @@ module Swagger
               root[:apis] << resource_api
             end
           end
-
+          root[:resources] = resources
           camelize_keys_deep!(root)
-          write_to_file("#{settings[:api_file_path]}/api-docs.json", root, config)
+          results[:root] = root
           results
         end
 
@@ -115,7 +137,7 @@ module Swagger
           {action: :processed, path: path, apis: apis, models: models, klass: klass}
         end
 
-        def create_resource_file(path, apis, models, settings, root, config)
+        def generate_resource(path, apis, models, settings, root, config)
           debased_path = get_debased_path(path, settings[:controller_base_path])
           demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
           resource_path = trim_leading_slash(debased_path.to_s.underscore)
@@ -123,8 +145,8 @@ module Swagger
           camelize_keys_deep!(resource)
           # Add the already-normalized models to the resource.
           resource = resource.merge({:models => models}) if models.present?
-          # write controller resource file
-          write_to_file(File.join(settings[:api_file_path], "#{resource_path}.json"), resource, config)
+          resource[:resource_file_path] = resource_path
+          resource
         end
 
         def get_route_path_apis(path, route, klass, settings, config)
