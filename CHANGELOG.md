@@ -1,3 +1,8 @@
+## 0.1.4
+- An undocumentated action in a documented controller should not raise errors #43 @ldnunes
+- Allow reopening of docs definition for the swagger_api DSL command #44 @ldnunes
+- Refactor write_docs to split the documentation generation from file writing #45 @ldnunes
+
 ## 0.1.3
 - Fix issue where empty path throws error
 
