@@ -18,10 +18,7 @@ module Swagger
 
         def write_docs(apis = nil)
           results = generate_docs(apis)
-          results.each do |api_version, result|
-            write_doc(result)
-          end
-          results
+          results.each{|api_version, result| write_doc(result) }
         end
 
         def write_doc(result)
