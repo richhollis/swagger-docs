@@ -157,12 +157,12 @@ module Swagger
           operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v.respond_to?(:deep_dup) ? v.deep_dup : v.dup] }] # rename :@instance hash keys
           operations[:method] = verb
           operations[:nickname] = "#{path.camelize}##{action}"
-          
+
           api_path = transform_spec_to_api_path(route.path.spec, settings[:controller_base_path], config[:api_extension_type])
           operations[:parameters] = filter_path_params(api_path, operations[:parameters]) if operations[:parameters]
 
           apis << {:path => api_path, :operations => [operations]}
-          models = get_klass_models(klass)          
+          models = get_klass_models(klass)
 
           {apis: apis, models: models}
         end
@@ -186,8 +186,8 @@ module Swagger
           base_path = trim_trailing_slash(config[:base_path] || "")
           controller_base_path = trim_leading_slash(config[:controller_base_path] || "")
           base_path += "/#{controller_base_path}" unless controller_base_path.empty?
-          api_file_path = config[:api_file_path]          
-          settings = { 
+          api_file_path = config[:api_file_path]
+          settings = {
             base_path: base_path,
             controller_base_path: controller_base_path,
             api_file_path: api_file_path

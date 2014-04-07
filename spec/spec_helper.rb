@@ -41,4 +41,3 @@ end
 def get_api_parameter(api, name)
   api["parameters"].each{|param| return param if param["name"] == name}
 end
-
