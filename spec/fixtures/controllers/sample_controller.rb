@@ -62,6 +62,13 @@ module Api
         summary "Builds a new User item"
       end
 
+      swagger_api :context_dependent do
+        summary "An action dependent on the context of the controller " +
+          "class. Right now it is: " + ApplicationController.context
+        response :success
+        response :unauthorized
+      end
+
       # Support for Swagger complex types:
       # https://github.com/wordnik/swagger-core/wiki/Datatypes#wiki-complex-types
       swagger_model :Tag do
