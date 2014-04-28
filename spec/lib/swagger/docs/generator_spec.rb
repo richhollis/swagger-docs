@@ -184,6 +184,25 @@ describe Swagger::Docs::Generator do
         it "writes out expected api count" do
           expect(response["apis"].count).to eq 7
         end
+        describe "context dependent documentation" do
+          after(:each) do
+            ApplicationController.context = "original"
+          end
+          let(:routes) {[stub_route("^GET$", "context_dependent", "api/v1/sample", "/api/v1/sample(.:format)")]}
+          let(:operations) { apis[0]["operations"] }
+          it "should be the original" do
+            ApplicationController.context = "original"
+            generate(config)
+            expect(operations.first["summary"]).to eq "An action dependent on the context of the controller class. Right now it is: original"
+          end
+          context "when modified" do
+            it "should be modified" do
+              ApplicationController.context = "modified"
+              generate(config)
+              expect(operations.first["summary"]).to eq "An action dependent on the context of the controller class. Right now it is: modified"
+            end
+          end
+        end
         context "apis" do
           context "index" do
             let(:api) { get_api_operation(apis, "sample", :get) }
