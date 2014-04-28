@@ -1,3 +1,6 @@
+## 0.1.5
+- Delay processing docs DSL to allow changing the context of the controllers #47 @ldnunes
+
 ## 0.1.4
 - An undocumentated action in a documented controller should not raise errors #43 @ldnunes
 - Allow reopening of docs definition for the swagger_api DSL command #44 @ldnunes
