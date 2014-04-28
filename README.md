@@ -216,6 +216,35 @@ https://github.com/richhollis/swagger-docs-sample
 
 ### Advanced Customization
 
+#### Recurring parameters
+
+If you have lots of recurring parameters then you can use this approach suggested by Lucas Dutra Nunes (@ldnunes):
+
+```
+class Api::BaseController < ActionController::Base
+  class << self
+    Swagger::Docs::Generator::set_real_methods
+
+    def inherited(subclass)
+      super
+      subclass.class_eval do
+        setup_basic_api_documentation
+      end
+    end
+
+    private
+
+    def setup_basic_api_documentation
+      [:index, :show, :create, :update, :delete].each do |api_action|
+        swagger_api api_action do
+          param :header, 'Authentication-Token', :string, :required, 'Authentication token'
+        end
+      end
+    end
+  end
+end
+```
+
 #### Inheriting from a custom Api controller
 
 By default swagger-docs is applied to controllers inheriting from ApplicationController.
