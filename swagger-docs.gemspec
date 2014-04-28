@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
   spec.signing_key = File.expand_path("~/.gemcert/gem-private_key.pem") if $0 =~ /gem\z/
 
   spec.add_development_dependency "bundler", "~> 1.3"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "rails"
-  spec.add_development_dependency "appraisal"
+  spec.add_development_dependency "rake",  "~> 0"
+  spec.add_development_dependency "rspec",  "~> 0"
+  spec.add_development_dependency "rails",  "~> 0"
+  spec.add_development_dependency "appraisal",  "~> 0"
 end
