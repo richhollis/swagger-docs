@@ -2,7 +2,13 @@ module Swagger
   module Docs
     class Config
       class << self
-        def base_api_controller; ActionController::Base end
+        @@base_api_controller = nil
+        def base_api_controller
+          @@base_api_controller ? @@base_api_controller : ActionController::Base
+        end
+        def base_api_controller=(controller)
+          @@base_api_controller = controller
+        end
         def base_application; Rails.application end
         def register_apis(versions)
           base_api_controller.send(:include, ImpotentMethods)
