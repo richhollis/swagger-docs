@@ -62,8 +62,7 @@ module Swagger
             ret = process_path(path, root, config, settings)
             results[ret[:action]] << ret
             if ret[:action] == :processed
-              resource = generate_resource(ret[:path], ret[:apis], ret[:models], settings, root, config)
-              resources << resource
+              resources << generate_resource(ret[:path], ret[:apis], ret[:models], settings, root, config)
               debased_path = get_debased_path(ret[:path], settings[:controller_base_path])
               resource_api = {
                 path: "#{Config.transform_path(trim_leading_slash(debased_path))}.{format}",
