@@ -11,6 +11,10 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
   config.color_enabled = true
+
+  config.before(:each) do
+    Swagger::Docs::Config.base_api_controller = nil # use default object
+  end
 end
 
 def generate(config)
