@@ -84,6 +84,12 @@ The following table shows all the current configuration options and their defaul
 </tr>
 
 <tr>
+<td><b>base_api_controller</b></td>
+<td>The base controller class your project uses; it or its subclasses will be where you call swagger_controller and swagger_api.</td>
+<td>ActionController::Base</td>
+</tr>
+
+<tr>
 <td><b>clean_directory</b></td>
 <td>When generating swagger-docs files this option specifies if the api_file_path should be cleaned first. This means that all files will be deleted in the output directory first before any files are generated.</td>
 <td>false</td>
