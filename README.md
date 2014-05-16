@@ -169,6 +169,36 @@ class Api::V1::UsersController < ApplicationController
 end
 ```
 
+### DRYing up common documentation
+
+Suppose you have a header or a parameter that must be present on several controllers and methods. Instead of duplicating it on all the controllers you can do this on your API base controller:
+
+```ruby
+class Api::BaseController < ActionController::Base
+  class << self
+    Swagger::Docs::Generator::set_real_methods
+
+    def inherited(subclass)
+      super
+      subclass.class_eval do
+        setup_basic_api_documentation
+      end
+    end
+
+    private
+    def setup_basic_api_documentation
+      [:index, :show, :create, :update, :delete].each do |api_action|
+        swagger_api api_action do
+          param :header, 'Authentication-Token', :string, :required, 'Authentication token'
+        end
+      end
+    end
+  end
+end
+```
+
+And then use it as a superclass to all you API controllers. All the subclassed controllers will have the same documentation applied to them.
+
 ### DSL Methods
 
 <table>
