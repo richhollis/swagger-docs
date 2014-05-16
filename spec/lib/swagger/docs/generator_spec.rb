@@ -34,7 +34,7 @@ describe Swagger::Docs::Generator do
       }
     }
     before(:each) do
-      Rails.stub_chain(:application, :routes, :routes).and_return(routes)
+      allow(Rails).to receive_message_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
       require "fixtures/controllers/sample_controller"
       generate(config)
@@ -83,7 +83,7 @@ describe Swagger::Docs::Generator do
     })}
     let(:file_resource) { tmp_dir + 'sample.json' }
     before(:each) do
-      Rails.stub_chain(:application, :routes, :routes).and_return(routes)
+      allow(Rails).to receive_message_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
       require "fixtures/controllers/sample_controller"
     end
@@ -248,7 +248,7 @@ describe Swagger::Docs::Generator do
                 expect(params.first["description"]).to eq "Page number"
               end
               it "writes required correctly" do
-                expect(params.first["required"]).to be_false
+                expect(params.first["required"]).to be_falsey
               end
             end
             #"responseMessages":[{"code":401,"message":"Unauthorized"},{"code":406,"message":"Not Acceptable"},{"code":416,"message":"Requested Range Not Satisfiable"}]
