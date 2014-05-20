@@ -286,6 +286,9 @@ describe Swagger::Docs::Generator do
           end
           context "update" do
             let(:api) { get_api_operation(apis, "sample/{id}", :put) }
+            it "writes notes correctly" do
+              expect(operations.first["notes"]).to eq "Only the given fields are updated."
+            end
             it "writes model param correctly" do
               expected_param = {
                 "paramType" => "form",
