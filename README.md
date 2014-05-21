@@ -9,6 +9,7 @@ swagger_controller :users, "User Management"
 
 swagger_api :index do
   summary "Fetches all User items"
+  notes "This lists all the active users"
   param :query, :page, :integer, :optional, "Page number"
   response :unauthorized
   response :not_acceptable
@@ -114,6 +115,7 @@ class Api::V1::UsersController < ApplicationController
 
   swagger_api :index do
     summary "Fetches all User items"
+    notes "This lists all the active users"
     param :query, :page, :integer, :optional, "Page number"
     param :path, :nested_id, :integer, :optional, "Team Id"
     response :unauthorized
@@ -213,6 +215,11 @@ And then use it as a superclass to all you API controllers. All the subclassed c
 <tr>
 <td>summary</td>
 <td>The summary of the API</td>
+</tr>
+
+<tr>
+<td>notes (optional)</td>
+<td>The associated notes for the API</td>
 </tr>
 
 <tr>
@@ -604,6 +611,8 @@ users.json output:
 Thanks to jdar, fotinakis, stevschmid, ldnunes and all of our contributors for making swagger-docs even better.
 
 ## Contributing
+
+When raising a Pull Request please ensure that you have provided good test coverage for the request you are making.
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)

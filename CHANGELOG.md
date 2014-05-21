@@ -1,3 +1,11 @@
+## 0.1.6
+
+- Document notes DSL
+- Get rid of unnecessary ternary operator in dsl.rb #54
+- Fix development dependencies gems requirements #53
+- Add support for the `notes` property #52
+- Config's base_api_controller is configurable #51
+
 ## 0.1.5
 - Delay processing docs DSL to allow changing the context of the controllers #47 @ldnunes
 
