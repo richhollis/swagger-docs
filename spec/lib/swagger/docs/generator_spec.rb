@@ -286,6 +286,7 @@ describe Swagger::Docs::Generator do
           end
           context "update" do
             let(:api) { get_api_operation(apis, "sample/{id}", :put) }
+            let(:operations) { get_api_operations(apis, "sample/{id}") }
             it "writes notes correctly" do
               expect(operations.first["notes"]).to eq "Only the given fields are updated."
             end
