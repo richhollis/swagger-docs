@@ -35,7 +35,7 @@ module Swagger
 
       def param(param_type, name, type, required, description = nil, hash={})
         parameters << {:param_type => param_type, :name => name, :type => type,
-          :description => description, :required => required == :required ? true : false}.merge(hash)
+          :description => description, :required => required == :required}.merge(hash)
       end
 
       # helper method to generate enums
@@ -93,7 +93,7 @@ module Swagger
           type: type,
           description: description,
         }.merge!(hash)
-        self.required << name if (required == :required ? true : false)
+        self.required << name if required == :required
       end
     end
   end
