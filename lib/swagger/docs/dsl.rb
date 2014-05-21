@@ -16,6 +16,10 @@ module Swagger
       def summary(text)
         @summary = text
       end
+      
+      def notes(text)
+        @notes = text
+      end
 
       def method(method)
         @method = method

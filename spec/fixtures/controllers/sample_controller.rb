@@ -40,6 +40,7 @@ module Api
 
       swagger_api :update do
         summary "Updates an existing User"
+        notes "Only the given fields are updated."
         param :path, :id, :integer, :required, "User Id"
         param :form, :first_name, :string, :optional, "First name"
         param :form, :last_name, :string, :optional, "Last name"
