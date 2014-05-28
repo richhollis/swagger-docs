@@ -62,7 +62,7 @@ module Swagger
             ret = process_path(path, root, config, settings)
             results[ret[:action]] << ret
             if ret[:action] == :processed
-              resources << generate_resource(ret[:path], ret[:apis], ret[:models], settings, root, config)
+              resources << generate_resource(ret[:path], ret[:apis], ret[:models], settings, root)
               debased_path = get_debased_path(ret[:path], settings[:controller_base_path])
               resource_api = {
                 path: "#{Config.transform_path(trim_leading_slash(debased_path))}.{format}",
@@ -133,16 +133,9 @@ module Swagger
           {action: :processed, path: path, apis: apis, models: models, klass: klass}
         end
 
-        def generate_resource(path, apis, models, settings, root, config)
-          debased_path = get_debased_path(path, settings[:controller_base_path])
-          demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
-          resource_path = trim_leading_slash(debased_path.to_s.underscore)
-          resource = root.merge({:resource_path => "#{demod}", :apis => apis})
-          camelize_keys_deep!(resource)
-          # Add the already-normalized models to the resource.
-          resource = resource.merge({:models => models}) if models.present?
-          resource[:resource_file_path] = resource_path
-          resource
+        def generate_resource(path, apis, models, settings, root)
+          declaration = ApiDeclarationFile.new(path, apis, models, settings[:controller_base_path], root)
+          declaration.generate_resource
         end
 
         def get_route_path_apis(path, route, klass, settings, config)
