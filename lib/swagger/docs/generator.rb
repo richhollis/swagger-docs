@@ -54,7 +54,7 @@ module Swagger
         end
 
         def generate_doc(api_version, settings, config)
-          root = { :api_version => api_version, :swagger_version => "1.2", :base_path => settings[:base_path] + "/", :apis => []}
+          root = { "apiVersion" => api_version, "swaggerVersion" => "1.2", "basePath" => settings[:base_path] + "/", :apis => []}
           results = {:processed => [], :skipped => []}
           resources = []
 
@@ -71,8 +71,7 @@ module Swagger
               root[:apis] << resource_api
             end
           end
-          root[:resources] = resources
-          camelize_keys_deep!(root)
+          root['resources'] = resources
           results[:root] = root
           results
         end

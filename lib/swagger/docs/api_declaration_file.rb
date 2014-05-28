@@ -14,22 +14,22 @@ module Swagger
       def generate_resource
         resource = build_resource_root_hash
         camelize_keys_deep!(resource)
+        camelize_keys_deep!(models)
         # Add the already-normalized models to the resource.
-        resource[:resource_file_path] = resource_file_path
         resource = resource.merge({:models => models}) if models.present?
         resource
       end
 
       def base_path
-        root[:base_path]
+        root["basePath"]
       end
 
       def swagger_version
-        root[:swagger_version]
+        root["swaggerVersion"]
       end
 
       def api_version
-        root[:api_version]
+        root["apiVersion"]
       end
 
       def resource_path
@@ -49,6 +49,7 @@ module Swagger
           "basePath" => base_path,
           "resourcePath" => resource_path,
           "apis" => apis,
+          "resource_file_path" => resource_file_path
         }
       end
 
