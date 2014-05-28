@@ -5,16 +5,14 @@ module Swagger
 
       def initialize(path, apis, models, controller_base_path, root)
         @path = path
-        @apis = apis
-        @models = models
+        @apis = camelize_keys_deep apis
+        @models = camelize_keys_deep models
         @controller_base_path = controller_base_path
         @root = root
       end
 
       def generate_resource
         resource = build_resource_root_hash
-        camelize_keys_deep!(resource)
-        camelize_keys_deep!(models)
         # Add the already-normalized models to the resource.
         resource = resource.merge({:models => models}) if models.present?
         resource
@@ -49,7 +47,7 @@ module Swagger
           "basePath" => base_path,
           "resourcePath" => resource_path,
           "apis" => apis,
-          "resource_file_path" => resource_file_path
+          "resourceFilePath" => resource_file_path
         }
       end
 
@@ -67,17 +65,21 @@ module Swagger
         str.gsub(/\A\/+/, '')
       end
 
-      def camelize_keys_deep!(h)
-        h.keys.each do |k|
-          ks    = k.to_s.camelize(:lower)
-          h[ks] = h.delete k
-          camelize_keys_deep! h[ks] if h[ks].kind_of? Hash
-          if h[ks].kind_of? Array
-            h[ks].each do |a|
-              next unless a.kind_of? Hash
-              camelize_keys_deep! a
+      def camelize_keys_deep(obj)
+        if obj.is_a? Hash
+          Hash[
+            obj.map do |k, v|
+              new_key =  k.to_s.camelize(:lower)
+              new_value = camelize_keys_deep v
+              [new_key, new_value]
             end
+          ]
+        elsif obj.is_a? Array
+          new_value = obj.collect do |a|
+            camelize_keys_deep a
           end
+        else
+          obj
         end
       end
     end

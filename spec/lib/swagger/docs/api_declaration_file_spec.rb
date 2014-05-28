@@ -2,47 +2,49 @@ require "spec_helper"
 
 describe Swagger::Docs::ApiDeclarationFile do
   let(:path) { "api/v1/sample" }
-  let(:apis) do [
-    {
-      :path=>"sample/{id}",
-      :operations=>[
-        {
-          :summary=>"Updates an existing User",
-          :parameters=>[
-            { :param_type=>:path, :name=>:id, :type=>:integer, :description=>"User Id", :required=>true},
-            {:param_type=>:form, :name=>:first_name, :type=>:string, :description=>"First name", :required=>false},
-            {:param_type=>:form, :name=>:last_name, :type=>:string, :description=>"Last name", :required=>false},
-            {:param_type=>:form, :name=>:email, :type=>:string, :description=>"Email address", :required=>false},
-            {:param_type=>:form, :name=>:tag, :type=>:Tag, :description=>"Tag object", :required=>true}
-          ],
-          :response_messages=>[
-            {:code=>401, :message=>"Unauthorized"},
-            {:code=>404, :message=>"Not Found"},
-            {:code=>406, :message=>"Not Acceptable"}
-          ],
-          :notes=>"Only the given fields are updated.",
-          :method=>:put,
-          :nickname=>"Api::V1::Sample#update"
-        }
-      ]
-    }
-  ]
+  let(:apis) do
+    [
+      {
+        :path=>"sample/{id}",
+        :operations=>[
+          {
+            :summary=>"Updates an existing User",
+            :parameters=>[
+              {:param_type=>:path, :name=>:id, :type=>:integer, :description=>"User Id", :required=>true},
+              {:param_type=>:form, :name=>:first_name, :type=>:string, :description=>"First name", :required=>false},
+              {:param_type=>:form, :name=>:last_name, :type=>:string, :description=>"Last name", :required=>false},
+              {:param_type=>:form, :name=>:email, :type=>:string, :description=>"Email address", :required=>false},
+              {:param_type=>:form, :name=>:tag, :type=>:Tag, :description=>"Tag object", :required=>true}
+            ],
+            :response_messages=>[
+              {:code=>401, :message=>"Unauthorized"},
+              {:code=>404, :message=>"Not Found"},
+              {:code=>406, :message=>"Not Acceptable"}
+            ],
+            :notes=>"Only the given fields are updated.",
+            :method=>:put,
+            :nickname=>"Api::V1::Sample#update"
+          }
+        ]
+      }
+    ]
   end
 
   let(:models) do
     {
-    :Tag=>
-    {
-      :id=>:Tag,
-      :required=>[:id],
-      :properties=>
+      :Tag=>
       {
-        :id=>{:type=>:integer, :description=>"User Id"},
-        :name=>{:type=>:string, :description=>"Name", :foo=>"test"}
-      },
-      :description=>"A Tag object."
+        :id=>:Tag,
+        :required=>[:id],
+        :properties=>
+        {
+          :id=>{:type=>:integer, :description=>"User Id"},
+          :first_name=>{:type=>:string, :description=>"First Name"},
+          :last_name=>{:type=>:string, :description=>"Last Name"}
+        },
+        :description=>"A Tag object."
+      }
     }
-  }
   end
 
   let(:controller_base_path) { "" }
@@ -60,7 +62,6 @@ describe Swagger::Docs::ApiDeclarationFile do
 
     it "generates the appropriate response" do
       declaration = described_class.new(path, apis, models, controller_base_path, root)
-
 
       expected_response = {
         "apiVersion"=> declaration.api_version,
@@ -93,6 +94,60 @@ describe Swagger::Docs::ApiDeclarationFile do
     it "returns root['apiVersion']" do
       declaration = described_class.new(path, apis, models, controller_base_path, root)
       expect(declaration.swagger_version).to eq(root['apiVersion'])
+    end
+  end
+
+  describe "#models" do
+    it "returns a models hash that's ready for output" do
+      declaration = described_class.new(path, apis, models, controller_base_path, root)
+      expected_models_hash = {
+        "tag" =>
+        {
+          "id" => :Tag,
+          "required" =>[:id],
+          "properties" =>
+          {
+            "id" =>{"type"=>:integer, "description"=>"User Id"},
+            "firstName"=>{"type"=>:string, "description"=>"First Name"},
+            "lastName"=>{"type"=>:string, "description"=>"Last Name"},
+          },
+          "description"=>"A Tag object."
+        }
+      }
+
+      expect(declaration.models).to eq(expected_models_hash)
+    end
+  end
+
+  describe "#apis" do
+    it "returns a api hash that's ready for output" do
+      declaration = described_class.new(path, apis, models, controller_base_path, root)
+      expected_apis_array = [
+        {
+          "path"=>"sample/{id}",
+          "operations"=>[
+            {
+              "summary"=>"Updates an existing User",
+              "parameters"=>[
+                {"paramType"=>:path, "name"=>:id, "type"=>:integer, "description"=>"User Id", "required"=>true},
+                {"paramType"=>:form, "name"=>:first_name, "type"=>:string, "description"=>"First name", "required"=>false},
+                {"paramType"=>:form, "name"=>:last_name, "type"=>:string, "description"=>"Last name", "required"=>false},
+                {"paramType"=>:form, "name"=>:email, "type"=>:string, "description"=>"Email address", "required"=>false},
+                {"paramType"=>:form, "name"=>:tag, "type"=>:Tag, "description"=>"Tag object", "required"=>true}
+              ],
+              "responseMessages"=>[
+                {"code"=>401, "message"=>"Unauthorized"},
+                {"code"=>404, "message"=>"Not Found"},
+                {"code"=>406, "message"=>"Not Acceptable"}
+              ],
+              "notes"=>"Only the given fields are updated.",
+              "method"=>:put,
+              "nickname"=>"Api::V1::Sample#update"
+            }
+          ]
+        }
+      ]
+      expect(declaration.apis).to eq(expected_apis_array)
     end
   end
 end
