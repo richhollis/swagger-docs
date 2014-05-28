@@ -1,14 +1,12 @@
 module Swagger
   module Docs
     class ApiDeclarationFile
-      attr_reader :path, :apis, :models, :controller_base_path, :root
+      attr_reader :metadata, :apis
 
-      def initialize(path, apis, models, controller_base_path, root)
-        @path = path
+      def initialize(metadata, apis, models)
+        @metadata = metadata
         @apis = camelize_keys_deep apis
-        @models = camelize_keys_deep models
-        @controller_base_path = controller_base_path
-        @root = root
+        @models = models
       end
 
       def generate_resource
@@ -19,15 +17,27 @@ module Swagger
       end
 
       def base_path
-        root["basePath"]
+        metadata.base_path
+      end
+
+      def path
+        metadata.path
       end
 
       def swagger_version
-        root["swaggerVersion"]
+        metadata.swagger_version
       end
 
       def api_version
-        root["apiVersion"]
+        metadata.api_version
+      end
+
+      def controller_base_path
+        metadata.controller_base_path
+      end
+
+      def camelize_model_properties
+        metadata.camelize_model_properties
       end
 
       def resource_path
@@ -36,6 +46,10 @@ module Swagger
 
       def resource_file_path
         trim_leading_slash(debased_path.to_s.underscore)
+      end
+
+      def models
+        normalize_model_properties @models
       end
 
       private
@@ -51,6 +65,16 @@ module Swagger
         }
       end
 
+      def normalize_model_properties(models)
+        Hash[
+          models.map do |k, v|
+            if camelize_model_properties
+              [k.to_s, camelize_keys_deep(v)]
+            else
+              [k.to_s, stringify_keys_deep(v)]
+            end
+          end]
+      end
 
       def demod
         "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
@@ -66,22 +90,31 @@ module Swagger
       end
 
       def camelize_keys_deep(obj)
+        process_keys_deep(obj){|key| key.to_s.camelize(:lower)}
+      end
+
+      def stringify_keys_deep(obj)
+        process_keys_deep(obj){|key| key.to_s}
+      end
+
+      def process_keys_deep(obj, &block)
         if obj.is_a? Hash
           Hash[
             obj.map do |k, v|
-              new_key =  k.to_s.camelize(:lower)
-              new_value = camelize_keys_deep v
+              new_key =  block.call(k)
+              new_value = process_keys_deep v, &block
               [new_key, new_value]
             end
           ]
         elsif obj.is_a? Array
           new_value = obj.collect do |a|
-            camelize_keys_deep a
+            process_keys_deep a, &block
           end
         else
           obj
         end
       end
+
     end
   end
 end

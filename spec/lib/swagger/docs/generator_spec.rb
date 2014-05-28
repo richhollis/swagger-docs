@@ -321,7 +321,7 @@ describe Swagger::Docs::Generator do
                 }
               }
             }
-            expect(models['tag']).to eq expected_model
+            expect(models['Tag']).to eq expected_model
           end
         end
       end

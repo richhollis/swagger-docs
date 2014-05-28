@@ -102,6 +102,12 @@ The following table shows all the current configuration options and their defaul
 <td>:pretty</td>
 </tr>
 
+<tr>
+<td><b>camelize_model_properties</b></td>
+<td>Camelizes property names of models. For example, a property name called first_name would be converted to firstName.</td>
+<td>true</td>
+</tr>
+
 </tbody>
 </table>
 
@@ -174,19 +180,19 @@ end
 ### DRYing up common documentation
 
 Suppose you have a header or a parameter that must be present on several controllers and methods. Instead of duplicating it on all the controllers you can do this on your API base controller:
- 
+
 ```ruby
 class Api::BaseController < ActionController::Base
   class << self
     Swagger::Docs::Generator::set_real_methods
- 
+
     def inherited(subclass)
       super
       subclass.class_eval do
         setup_basic_api_documentation
       end
     end
- 
+
     private
     def setup_basic_api_documentation
       [:index, :show, :create, :update, :delete].each do |api_action|
@@ -198,7 +204,7 @@ class Api::BaseController < ActionController::Base
   end
 end
 ```
- 
+
 And then use it as a superclass to all you API controllers. All the subclassed controllers will have the same documentation applied to them.
 
 ### DSL Methods
