@@ -54,7 +54,7 @@ module Swagger
         end
 
         def generate_doc(api_version, settings, config)
-          root = { :api_version => api_version, :swagger_version => "1.2", :base_path => settings[:base_path] + "/", :apis => []}
+          root = { "apiVersion" => api_version, "swaggerVersion" => "1.2", "basePath" => settings[:base_path] + "/", :apis => []}
           results = {:processed => [], :skipped => []}
           resources = []
 
@@ -71,8 +71,7 @@ module Swagger
               root[:apis] << resource_api
             end
           end
-          root[:resources] = resources
-          camelize_keys_deep!(root)
+          root['resources'] = resources
           results[:root] = root
           results
         end
@@ -134,15 +133,12 @@ module Swagger
         end
 
         def generate_resource(path, apis, models, settings, root, config)
-          debased_path = get_debased_path(path, settings[:controller_base_path])
-          demod = "#{debased_path.to_s.camelize}".demodulize.camelize.underscore
-          resource_path = trim_leading_slash(debased_path.to_s.underscore)
-          resource = root.merge({:resource_path => "#{demod}", :apis => apis})
-          camelize_keys_deep!(resource)
-          # Add the already-normalized models to the resource.
-          resource = resource.merge({:models => models}) if models.present?
-          resource[:resource_file_path] = resource_path
-          resource
+          metadata = ApiDeclarationFileMetadata.new(root["apiVersion"], path, root["basePath"],
+                                                   settings[:controller_base_path],
+                                                   camelize_model_properties: config.fetch(:camelize_model_properties, true),
+                                                   swagger_version: root["swaggerVersion"])
+          declaration = ApiDeclarationFile.new(metadata, apis, models)
+          declaration.generate_resource
         end
 
         def get_route_path_apis(path, route, klass, settings, config)
