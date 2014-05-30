@@ -1,3 +1,7 @@
+## 0.1.7
+
+- Make camelizing of model properties configurable. #55
+
 ## 0.1.6
 
 - Document notes DSL

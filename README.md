@@ -614,7 +614,7 @@ users.json output:
 
 ## Thanks to our contributors
 
-Thanks to jdar, fotinakis, stevschmid, ldnunes and all of our contributors for making swagger-docs even better.
+Thanks to jdar, fotinakis, stevschmid, ldnunes, aaronrenner and all of our contributors for making swagger-docs even better.
 
 ## Contributing
 
