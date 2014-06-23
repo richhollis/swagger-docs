@@ -1,3 +1,8 @@
+## 0.1.8
+
+- Fix issue with gem build open-ended dependency warnings in gemspec
+- Fix issue where param_list doesn't output parameter description #57
+
 ## 0.1.7
 
 - Make camelizing of model properties configurable. #55
