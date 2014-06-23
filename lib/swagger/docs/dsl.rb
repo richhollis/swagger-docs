@@ -45,7 +45,7 @@ module Swagger
       # helper method to generate enums
       def param_list(param_type, name, type, required, description = nil, allowed_values = [], hash = {})
         hash.merge!({allowable_values: {value_type: "LIST", values: allowed_values}})
-        param(param_type, name, type, required, description = nil, hash)
+        param(param_type, name, type, required, description, hash)
       end
 
       def response_messages

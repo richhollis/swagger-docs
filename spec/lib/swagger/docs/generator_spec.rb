@@ -251,6 +251,13 @@ describe Swagger::Docs::Generator do
                 expect(params.first["required"]).to be_falsey
               end
             end
+            context "list parameter" do
+              let(:api) { get_api_operation(apis, "sample", :post) }
+              let(:params) {api["parameters"] }
+              it "writes description correctly" do
+                expect(params[3]["description"]).to eq "Role"
+              end
+            end
             #"responseMessages":[{"code":401,"message":"Unauthorized"},{"code":406,"message":"Not Acceptable"},{"code":416,"message":"Requested Range Not Satisfiable"}]
             context "response messages" do
               let(:response_msgs) { operations.first["responseMessages"] }
