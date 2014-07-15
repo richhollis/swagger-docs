@@ -288,6 +288,25 @@ class Swagger::Docs::Config
 end
 ```
 
+If you want swagger to find controllers in `Rails.application` and/or multiple
+engines you can override `base_application` to return an array. 
+
+```ruby
+class Swagger::Docs::Config
+  def self.base_application; [Rails.application, Api::Engine, SomeOther::Engine] end
+end
+```
+
+Or, if you prefer you can override `base_applications` for this purpose. The plural
+`base_applications` takes precedence over `base_application` and MUST return an
+array.
+
+```ruby
+class Swagger::Docs::Config
+  def self.base_applications; [Rails.application, Api::Engine, SomeOther::Engine] end
+end
+```
+
 #### Transforming the `path` variable
 
 Swagger allows a distinction between the API documentation server and the hosted API

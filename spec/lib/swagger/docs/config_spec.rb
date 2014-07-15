@@ -28,4 +28,12 @@ describe Swagger::Docs::Config do
     end
   end
 
+  describe "::base_applications" do
+    before(:each) { allow( subject ).to receive(:base_application).and_return(:app) }
+    it "defaults to Rails.application an an Array" do
+      expect(subject.base_applications).to eq [:app]
+    end
+  end
+
+
  end

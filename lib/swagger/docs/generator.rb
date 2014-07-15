@@ -124,7 +124,7 @@ module Swagger
           return {action: :skipped, path: path, reason: :klass_not_present} if !klass
           return {action: :skipped, path: path, reason: :not_swagger_resource} if !klass.methods.include?(:swagger_config) or !klass.swagger_config[:controller]
           apis, models = [], {}
-          Config.base_application.routes.routes.select{|i| i.defaults[:controller] == path}.each do |route|
+          routes.select{|i| i.defaults[:controller] == path}.each do |route|
             ret = get_route_path_apis(path, route, klass, settings, config)
             apis = apis + ret[:apis]
             models.merge!(ret[:models])
@@ -139,6 +139,10 @@ module Swagger
                                                    swagger_version: root["swaggerVersion"])
           declaration = ApiDeclarationFile.new(metadata, apis, models)
           declaration.generate_resource
+        end
+
+        def routes
+          Config.base_applications.map{|app| app.routes.routes.to_a }.flatten
         end
 
         def get_route_path_apis(path, route, klass, settings, config)
@@ -187,7 +191,7 @@ module Swagger
         end
 
         def get_route_paths(controller_base_path)
-          paths = Config.base_application.routes.routes.map{|i| "#{i.defaults[:controller]}" }
+          paths = routes.map{|i| "#{i.defaults[:controller]}" }
           paths.uniq.select{|i| i.start_with?(controller_base_path)}
         end
 
