@@ -7,17 +7,18 @@ module Swagger
       end
 
       module ClassMethods
-        def swagger_controller(controller, description)
+        def swagger_controller(controller, description, params = {})
           swagger_config[:controller] = controller
           swagger_config[:description] = description
         end
 
         def swagger_actions
           swagger_dsl = {}
-          Array(@swagger_dsl).each do |action, controller, block|
+          Array(@swagger_dsl).each do |action, params, controller, block|
             dsl = SwaggerDSL.call(action, controller, &block)
             swagger_dsl[action] ||= {}
             swagger_dsl[action].deep_merge!(dsl) { |key, old, new| Array(old) + Array(new) }
+            swagger_dsl[action].deep_merge!(params) # merge in user api parameters
           end
           swagger_dsl
         end
@@ -35,11 +36,9 @@ module Swagger
           @swagger_config ||= {}
         end
 
-        private
-
-        def swagger_api(action, &block)
+        def swagger_api(action, params = {}, &block)
           @swagger_dsl ||= []
-          @swagger_dsl << [action, self, block]
+          @swagger_dsl << [action, params, self, block]
         end
 
         def swagger_model(model_name, &block)

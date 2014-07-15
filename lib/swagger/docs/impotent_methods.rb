@@ -9,7 +9,7 @@ module Swagger
       module ClassMethods
         private
 
-        def swagger_api(action, &block)
+        def swagger_api(action, params = {}, &block)
         end
 
         def swagger_model(model_name, &block)
