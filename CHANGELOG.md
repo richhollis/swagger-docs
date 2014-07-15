@@ -1,3 +1,10 @@
+## 0.1.9 (next release - not released yet)
+
+- Adding support for multiple engines #65
+- Add ability for swagger_api to accept parameters (e.g. consumes, produces)
+- Update dependencies #64
+
+
 ## 0.1.8
 
 - Fix issue with gem build open-ended dependency warnings in gemspec
