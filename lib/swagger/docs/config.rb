@@ -12,6 +12,10 @@ module Swagger
           @@base_api_controller = controller
         end
 
+        def base_applications
+          Array(base_application)
+        end
+
         def base_application
           Rails.application 
         end
