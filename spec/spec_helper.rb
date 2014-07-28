@@ -21,7 +21,14 @@ def generate(config)
     Swagger::Docs::Generator::write_docs(config)
 end
 
-def stub_route(verb, action, controller, spec)
+def stub_string_verb_route(verb, action, controller, spec)
+  double("route", :verb => verb,
+    :defaults => {:action => action, :controller => controller},
+    :path => double("path", :spec => spec)
+  )
+end
+
+def stub_route(verb, action, controller, spec, with_source = true)
   double("route", :verb => double("verb", :source => verb),
     :defaults => {:action => action, :controller => controller},
     :path => double("path", :spec => spec)

@@ -13,7 +13,7 @@ describe Swagger::Docs::Generator do
   let(:routes) {[
     stub_route("^GET$", "index", "api/v1/ignored", "/api/v1/ignored(.:format)"),
     stub_route("^GET$", "index", "api/v1/sample", "/api/v1/sample(.:format)"),
-    stub_route("^GET$", "index", "api/v1/sample", "/api/v1/nested/:nested_id/sample(.:format)"),
+    stub_string_verb_route("GET", "index", "api/v1/sample", "/api/v1/nested/:nested_id/sample(.:format)"),
     stub_route("^POST$", "create", "api/v1/sample", "/api/v1/sample(.:format)"),
     stub_route("^GET$", "show", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
     stub_route("^PUT$", "update", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
