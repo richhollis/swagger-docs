@@ -28,7 +28,10 @@ module Swagger
           clean_output_paths(settings[:api_file_path]) if config[:clean_directory] || false
           root = result[:root]
           resources = root.delete 'resources'
+          root.merge!(config[:attributes] || {}) # merge custom user attributes like info
+          # write the api-docs file
           write_to_file("#{settings[:api_file_path]}/api-docs.json", root, config)
+          # write the individual resource files
           resources.each do |resource|
             resource_file_path = resource.delete 'resourceFilePath'
             write_to_file(File.join(settings[:api_file_path], "#{resource_file_path}.json"), resource, config)
@@ -54,7 +57,7 @@ module Swagger
         end
 
         def generate_doc(api_version, settings, config)
-          root = { "apiVersion" => api_version, "swaggerVersion" => "1.2", "basePath" => settings[:base_path] + "/", :apis => []}
+          root = { "apiVersion" => api_version, "swaggerVersion" => "1.2", "basePath" => settings[:base_path] + "/", :apis => [] }
           results = {:processed => [], :skipped => []}
           resources = []
 

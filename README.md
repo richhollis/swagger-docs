@@ -48,6 +48,17 @@ Swagger::Docs::Config.register_apis({
     :base_path => "http://api.somedomain.com",
     # if you want to delete all .json files at each generation
     :clean_directory => false
+    # add custom attributes to api-docs
+    :attributes => {
+      :info => {
+        "title" => "Swagger Sample App",
+        "description" => "This is a sample description.",
+        "termsOfServiceUrl" => "http://helloreverb.com/terms/",
+        "contact" => "apiteam@wordnik.com",
+        "license" => "Apache 2.0",
+        "licenseUrl" => "http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+    }
   }
 })
 ```

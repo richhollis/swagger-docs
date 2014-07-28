@@ -79,7 +79,18 @@ describe Swagger::Docs::Generator do
 
   context "with controller base path" do
     let(:config) { Swagger::Docs::Config.register_apis({
-       DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where"}
+       DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where",
+       :attributes => {
+          :info => {
+            "title" => "Swagger Sample App",
+            "description" => "This is a sample description.",
+            "termsOfServiceUrl" => "http://helloreverb.com/terms/",
+            "contact" => "apiteam@wordnik.com",
+            "license" => "Apache 2.0",
+            "licenseUrl" => "http://www.apache.org/licenses/LICENSE-2.0.html"
+         }
+        } 
+      }
     })}
     let(:file_resource) { tmp_dir + 'sample.json' }
     before(:each) do
@@ -110,6 +121,25 @@ describe Swagger::Docs::Generator do
       before(:each) do
         generate(config)
       end
+      context "api-docs resources file" do
+        it "writes the file" do
+         expect(file_resources).to exist
+        end
+        context "custom user attributes" do
+          let(:parsed_resources) {
+            JSON.parse(File.read file_resources)
+          }
+          it "it has info hash" do
+            expect(parsed_resources.keys).to include("info")
+          end
+          it "has title field" do
+            expect(parsed_resources["info"]["title"]).to eq "Swagger Sample App"
+          end
+          it "has description field" do
+            expect(parsed_resources["info"]["description"]).to eq "This is a sample description."
+          end
+        end
+      end
       it "cleans json files in directory when set" do
         file_to_delete = Pathname.new(File.join(config['1.0'][:api_file_path], 'delete_me.json'))
         File.open(file_to_delete, 'w') {|f| f.write("{}") }
@@ -124,9 +154,6 @@ describe Swagger::Docs::Generator do
         config[DEFAULT_VER][:clean_directory] = true
         generate(config)
         expect(file_to_keep).to exist
-      end
-      it "writes the resources file" do
-         expect(file_resources).to exist
       end
       it "writes the resource file" do
          expect(file_resource).to exist
