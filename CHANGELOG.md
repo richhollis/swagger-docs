@@ -4,7 +4,7 @@
 - Add ability for swagger_api to accept parameters (e.g. consumes, produces)
 - Update dependencies #64
 - Address issue with routing verbs where some verbs do not have a route.verb.source attribute only route.verb #58
-- Add ability to set custom attributes (like info block) on api-docs file 
+- Add ability to set custom attributes (like info block) on api-docs file #67
 
 ## 0.1.8
 
