@@ -11,21 +11,23 @@ describe Swagger::Docs::Generator do
   end
 
   let(:routes) {[
-    stub_route("^GET$", "index", "api/v1/ignored", "/api/v1/ignored(.:format)"),
-    stub_route("^GET$", "index", "api/v1/sample", "/api/v1/sample(.:format)"),
-    stub_string_verb_route("GET", "index", "api/v1/sample", "/api/v1/nested/:nested_id/sample(.:format)"),
-    stub_route("^POST$", "create", "api/v1/sample", "/api/v1/sample(.:format)"),
-    stub_route("^GET$", "show", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
-    stub_route("^PUT$", "update", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
-    stub_route("^DELETE$", "destroy", "api/v1/sample", "/api/v1/sample/:id(.:format)"),
-    stub_route("^GET$", "new", "api/v1/sample", "/api/v1/sample/new(.:format)"), # no parameters for this method
-    stub_route("^GET$", "index", "", "/api/v1/empty_path"), # intentional empty path should not cause any errors
-    stub_route("^GET$", "ignored", "api/v1/sample", "/api/v1/ignored(.:format)") # an action without documentation should not cause any errors
+    stub_route(            "^GET$",    "index",   "api/v1/ignored", "/api/v1/ignored(.:format)"),
+    stub_route(            "^GET$",    "index",   "api/v1/sample",  "/api/v1/sample(.:format)"),
+    stub_string_verb_route("GET",      "index",   "api/v1/nested",  "/api/v1/nested/:nested_id/nested_sample(.:format)"),
+    stub_route(            "^PATCH$",  "create",  "api/v1/sample",  "/api/v1/sample(.:format)"),
+    stub_route(            "^PUT$",    "create",  "api/v1/sample",  "/api/v1/sample(.:format)"), # intentional duplicate of above route to ensure PATCH is used
+    stub_route(            "^GET$",    "show",    "api/v1/sample",  "/api/v1/sample/:id(.:format)"),
+    stub_route(            "^PUT$",    "update",  "api/v1/sample",  "/api/v1/sample/:id(.:format)"),
+    stub_route(            "^DELETE$", "destroy", "api/v1/sample",  "/api/v1/sample/:id(.:format)"),
+    stub_route(            "^GET$",    "new",     "api/v1/sample",  "/api/v1/sample/new(.:format)"), # no parameters for this method
+    stub_route(            "^GET$",    "index",   "",               "/api/v1/empty_path"), # intentional empty path should not cause any errors
+    stub_route(            "^GET$",    "ignored", "api/v1/sample",  "/api/v1/ignored(.:format)") # an action without documentation should not cause any errors
   ]}
 
   let(:tmp_dir) { Pathname.new('/tmp/swagger-docs/') }
   let(:file_resources) { tmp_dir + 'api-docs.json' }
   let(:file_resource) { tmp_dir + 'api/v1/sample.json' }
+  let(:file_resource_nested) { tmp_dir + 'nested.json' }
 
   context "without controller base path" do
     let(:config) {
@@ -65,7 +67,7 @@ describe Swagger::Docs::Generator do
         expect(response["resourcePath"]).to eq "sample"
       end
       it "writes out expected api count" do
-        expect(response["apis"].count).to eq 7
+        expect(response["apis"].count).to eq 6
       end
       context "first api" do
         #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
@@ -97,6 +99,7 @@ describe Swagger::Docs::Generator do
       allow(Rails).to receive_message_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
       require "fixtures/controllers/sample_controller"
+      require "fixtures/controllers/nested_controller"
     end
 
     context "test suite initialization" do
@@ -115,7 +118,7 @@ describe Swagger::Docs::Generator do
         end
         it "generates using default config" do
           results = generate({})
-          expect(results[DEFAULT_VER][:processed].count).to eq 1
+          expect(results[DEFAULT_VER][:processed].count).to eq 2
         end
       end
       before(:each) do
@@ -160,7 +163,7 @@ describe Swagger::Docs::Generator do
       end
       it "returns results hash" do
         results = generate(config)
-        expect(results[DEFAULT_VER][:processed].count).to eq 1
+        expect(results[DEFAULT_VER][:processed].count).to eq 2
         expect(results[DEFAULT_VER][:skipped].count).to eq 1
       end
       it "writes pretty json files when set" do
@@ -182,7 +185,7 @@ describe Swagger::Docs::Generator do
           expect(response["basePath"]).to eq "http://api.no.where/api/v1/"
         end
         it "writes apis correctly" do
-          expect(response["apis"].count).to eq 1
+          expect(response["apis"].count).to eq 2
         end
         it "writes api path correctly" do
           expect(response["apis"][0]["path"]).to eq "sample.{format}"
@@ -191,7 +194,23 @@ describe Swagger::Docs::Generator do
           expect(response["apis"][0]["description"]).to eq "User Management"
         end
       end
-      context "resource file" do
+      context "nested resource file" do
+        let(:resource) { file_resource_nested.read }
+        let(:response) { JSON.parse(resource) }
+        let(:apis) { response["apis"] }
+        context "apis" do
+          context "show" do
+            let(:api) { get_api_operation(apis, "nested/{nested_id}/nested_sample", :get) }
+            let(:operations) { get_api_operations(apis, "nested/{nested_id}/nested_sample") }
+            context "parameters" do
+              it "has correct count" do
+                expect(api["parameters"].count).to eq 2
+              end
+            end
+          end
+        end
+      end
+      context "sample resource file" do
         let(:resource) { file_resource.read }
         let(:response) { JSON.parse(resource) }
         let(:apis) { response["apis"] }
@@ -209,7 +228,7 @@ describe Swagger::Docs::Generator do
           expect(response["resourcePath"]).to eq "sample"
         end
         it "writes out expected api count" do
-          expect(response["apis"].count).to eq 7
+          expect(response["apis"].count).to eq 6
         end
         describe "context dependent documentation" do
           after(:each) do
@@ -279,7 +298,7 @@ describe Swagger::Docs::Generator do
               end
             end
             context "list parameter" do
-              let(:api) { get_api_operation(apis, "sample", :post) }
+              let(:api) { get_api_operation(apis, "sample", :patch) }
               let(:params) {api["parameters"] }
               it "writes description correctly" do
                 expect(params[3]["description"]).to eq "Role"
@@ -302,20 +321,14 @@ describe Swagger::Docs::Generator do
               end
             end
           end
-          context "show" do
-            let(:api) { get_api_operation(apis, "nested/{nested_id}/sample", :get) }
-            let(:operations) { get_api_operations(apis, "nested/{nested_id}/sample") }
-            context "parameters" do
-              it "has correct count" do
-                expect(api["parameters"].count).to eq 2
-              end
-            end
-          end
           context "create" do
-            let(:api) { get_api_operation(apis, "sample", :post) }
+            let(:api) { get_api_operation(apis, "sample", :patch) }
             it "writes list parameter values correctly" do
               expected_param = {"valueType"=>"LIST", "values"=>["admin", "superadmin", "user"]}
               expect(get_api_parameter(api, "role")["allowableValues"]).to eq expected_param
+            end
+            it "doesn't write out route put method" do
+              expect(get_api_operation(apis, "sample", :put)).to be_nil
             end
           end
           context "update" do

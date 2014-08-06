@@ -126,13 +126,32 @@ module Swagger
           klass = "#{path.to_s.camelize}Controller".constantize rescue nil
           return {action: :skipped, path: path, reason: :klass_not_present} if !klass
           return {action: :skipped, path: path, reason: :not_swagger_resource} if !klass.methods.include?(:swagger_config) or !klass.swagger_config[:controller]
-          apis, models = [], {}
+          apis, models, defined_nicknames = [], {}, []
           routes.select{|i| i.defaults[:controller] == path}.each do |route|
-            ret = get_route_path_apis(path, route, klass, settings, config)
-            apis = apis + ret[:apis]
-            models.merge!(ret[:models])
+            unless nickname_defined?(defined_nicknames, path, route) # only add once for each route once e.g. PATCH, PUT 
+              ret = get_route_path_apis(path, route, klass, settings, config)
+              apis = apis + ret[:apis]
+              models.merge!(ret[:models])
+              defined_nicknames << ret[:nickname] if ret[:nickname].present?
+            end
           end
           {action: :processed, path: path, apis: apis, models: models, klass: klass}
+        end
+
+        def route_verb(route)
+          if defined?(route.verb.source) then route.verb.source.to_s.delete('$'+'^') else route.verb end.downcase.to_sym 
+        end
+
+        def path_route_nickname(path, route)
+          action = route.defaults[:action]
+          "#{path.camelize}##{action}"
+        end
+
+        def nickname_defined?(defined_nicknames, path, route)
+          verb = route_verb(route)
+          target_nickname = path_route_nickname(path, route)
+          defined_nicknames.each{|nickname| return true if nickname == target_nickname }
+          false
         end
 
         def generate_resource(path, apis, models, settings, root, config)
@@ -151,11 +170,11 @@ module Swagger
         def get_route_path_apis(path, route, klass, settings, config)
           models, apis = {}, []
           action = route.defaults[:action]
-          verb = if defined?(route.verb.source) then route.verb.source.to_s.delete('$'+'^') else route.verb end.downcase.to_sym 
-          return {apis: apis, models: models} if !operations = klass.swagger_actions[action.to_sym]
+          verb = route_verb(route)
+          return {apis: apis, models: models, nickname: nil} if !operations = klass.swagger_actions[action.to_sym]
           operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v.respond_to?(:deep_dup) ? v.deep_dup : v.dup] }] # rename :@instance hash keys
           operations[:method] = verb
-          operations[:nickname] = "#{path.camelize}##{action}"
+          nickname = operations[:nickname] = path_route_nickname(path, route)
 
           route_path = if defined?(route.path.spec) then route.path.spec else route.path end
           api_path = transform_spec_to_api_path(route_path, settings[:controller_base_path], config[:api_extension_type])
@@ -164,7 +183,7 @@ module Swagger
           apis << {:path => api_path, :operations => [operations]}
           models = get_klass_models(klass)
 
-          {apis: apis, models: models}
+          {apis: apis, models: models, nickname: nickname}
         end
 
         def get_klass_models(klass)
