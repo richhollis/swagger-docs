@@ -646,6 +646,10 @@ users.json output:
 
 Thanks to jdar, fotinakis, stevschmid, ldnunes, aaronrenner and all of our contributors for making swagger-docs even better.
 
+## More About Me
+
+[Rich Hollis](http://richhollis.co.uk)
+
 ## Contributing
 
 When raising a Pull Request please ensure that you have provided good test coverage for the request you are making.
