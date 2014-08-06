@@ -47,8 +47,10 @@ end
 def get_api_operation(apis, path, method)
   operations = get_api_operations(apis, path)
   operations.each{|operation| return operation if operation["method"] == method.to_s}
+  nil
 end
 
 def get_api_parameter(api, name)
   api["parameters"].each{|param| return param if param["name"] == name}
+  nil
 end
