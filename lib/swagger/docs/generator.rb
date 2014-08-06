@@ -157,7 +157,8 @@ module Swagger
           operations[:method] = verb
           operations[:nickname] = "#{path.camelize}##{action}"
 
-          api_path = transform_spec_to_api_path(route.path.spec, settings[:controller_base_path], config[:api_extension_type])
+          route_path = if defined?(route.path.spec) then route.path.spec else route.path end
+          api_path = transform_spec_to_api_path(route_path, settings[:controller_base_path], config[:api_extension_type])
           operations[:parameters] = filter_path_params(api_path, operations[:parameters]) if operations[:parameters]
 
           apis << {:path => api_path, :operations => [operations]}

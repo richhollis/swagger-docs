@@ -24,11 +24,11 @@ end
 def stub_string_verb_route(verb, action, controller, spec)
   double("route", :verb => verb,
     :defaults => {:action => action, :controller => controller},
-    :path => double("path", :spec => spec)
+    :path => spec
   )
 end
 
-def stub_route(verb, action, controller, spec, with_source = true)
+def stub_route(verb, action, controller, spec)
   double("route", :verb => double("verb", :source => verb),
     :defaults => {:action => action, :controller => controller},
     :path => double("path", :spec => spec)
