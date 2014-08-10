@@ -24,10 +24,12 @@ module Api
 
       swagger_api :create do
         summary "Creates a new User"
+        consumes [ "application/json", "text/xml" ]
         param :form, :first_name, :string, :required, "First name"
         param :form, :last_name, :string, :required, "Last name"
         param :form, :email, :string, :required, "Email address"
         param_list :form, :role, :string, :required, "Role", [ "admin", "superadmin", "user" ]
+        param :body, :body, :json, :required, 'JSON formatted body'
         response :unauthorized
         response :not_acceptable
       end

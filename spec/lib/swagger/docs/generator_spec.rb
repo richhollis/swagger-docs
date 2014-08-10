@@ -325,7 +325,11 @@ describe Swagger::Docs::Generator do
             let(:api) { get_api_operation(apis, "sample", :patch) }
             it "writes list parameter values correctly" do
               expected_param = {"valueType"=>"LIST", "values"=>["admin", "superadmin", "user"]}
+              expected_body = {"paramType"=>"body", "name"=>"body", "type"=>"json", "description"=>"JSON formatted body", "required"=>true}
+              expected_consumes = ["application/json", "text/xml"]
               expect(get_api_parameter(api, "role")["allowableValues"]).to eq expected_param
+              expect(get_api_parameter(api, "body")).to eq expected_body
+              expect(api["consumes"]).to eq ["application/json", "text/xml"]
             end
             it "doesn't write out route put method" do
               expect(get_api_operation(apis, "sample", :put)).to be_nil
