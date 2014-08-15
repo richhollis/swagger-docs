@@ -6,6 +6,7 @@
 - Address issue with routing verbs where some verbs do not have a route.verb.source attribute only route.verb #58
 - Add ability to set custom attributes (like info block) on api-docs file #67
 - Ensure API endpoint/nickname (e.g. "Api::V1::Some#update") is only written out once per resource file. Addresses PATCH, POST duplication issue #70
+- Add "consumes" dsl method #74
 
 ## 0.1.8
 
