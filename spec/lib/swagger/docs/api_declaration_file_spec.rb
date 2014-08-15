@@ -22,7 +22,8 @@ describe Swagger::Docs::ApiDeclarationFile do
             ],
             :notes=>"Only the given fields are updated.",
             :method=>:put,
-            :nickname=>"Api::V1::Sample#update"
+            :nickname=>"Api::V1::Sample#update",
+            :consumes=>["application/json", "text/xml"]
           }
         ]
       }
@@ -187,7 +188,8 @@ describe Swagger::Docs::ApiDeclarationFile do
               ],
               "notes"=>"Only the given fields are updated.",
               "method"=>:put,
-              "nickname"=>"Api::V1::Sample#update"
+              "nickname"=>"Api::V1::Sample#update",
+              "consumes"=>["application/json", "text/xml"]
             }
           ]
         }

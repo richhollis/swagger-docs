@@ -29,6 +29,10 @@ module Swagger
         @type = type
       end
 
+      def consumes(mime_types)
+        @consumes = mime_types
+      end
+
       def nickname(nickname)
         @nickname = nickname
       end
