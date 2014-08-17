@@ -25,7 +25,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10"
   spec.add_development_dependency "rspec", "~> 3"
-  spec.add_development_dependency "rails", ">= 3","< 5"
-  spec.add_development_dependency "activesupport", ">= 3","< 5"
   spec.add_development_dependency "appraisal", "~> 1"
+
+  spec.add_runtime_dependency "rails", ">= 3","< 5"
+  spec.add_runtime_dependency "activesupport", ">= 3","< 5"
 end
