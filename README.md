@@ -335,8 +335,8 @@ class method in your initializer:
 
 ```ruby
 class Swagger::Docs::Config
-  def self.transform_path(path)
-    "http://example.com/api-docs/#{path}"
+  def self.transform_path(path, api_version)
+    "http://example.com/api-docs/#{api_version}/#{path}"
   end
 end
 ```
