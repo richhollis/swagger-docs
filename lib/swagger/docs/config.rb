@@ -29,7 +29,7 @@ module Swagger
           @versions ||= {}
         end
         
-        def transform_path(path)
+        def transform_path(path, api_version)
           # This is only for overriding, so don't perform any path transformations by default.
           path
         end
