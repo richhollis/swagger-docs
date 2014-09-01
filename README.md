@@ -152,6 +152,7 @@ class Api::V1::UsersController < ApplicationController
   swagger_api :show do
     summary "Fetches a single User item"
     param :path, :id, :integer, :optional, "User Id"
+    response :success, "Success", :User
     response :unauthorized
     response :not_acceptable
     response :not_found
