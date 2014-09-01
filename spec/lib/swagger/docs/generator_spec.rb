@@ -272,6 +272,9 @@ describe Swagger::Docs::Generator do
             it "writes nickname correctly" do
               expect(operations.first["nickname"]).to eq "Api::V1::Sample#index"
             end
+            it "writes responseModel attribute" do
+              expect(api["responseMessages"].find{|m| m["responseModel"] == "Tag"}).to_not be_nil
+            end
             #"parameters"=>[
             # {"paramType"=>"query", "name"=>"page", "type"=>"integer", "description"=>"Page number", "required"=>false},
             # {"paramType"=>"path", "name"=>"nested_id", "type"=>"integer", "description"=>"Team Id", "required"=>false}], "responseMessages"=>[{"code"=>401, "message"=>"Unauthorized"}, {"code"=>406, "message"=>"The request you made is not acceptable"}, {"code"=>416, "message"=>"Requested Range Not Satisfiable"}], "method"=>"get", "nickname"=>"Api::V1::Sample#index"}
@@ -308,7 +311,7 @@ describe Swagger::Docs::Generator do
             context "response messages" do
               let(:response_msgs) { operations.first["responseMessages"] }
               it "has correct count" do
-                expect(response_msgs.count).to eq 3
+                expect(response_msgs.count).to eq 4
               end
               it "writes code correctly" do
                 expect(response_msgs.first["code"]).to eq 401
