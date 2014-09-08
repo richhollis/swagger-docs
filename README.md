@@ -656,6 +656,10 @@ users.json output:
 
 Thanks to jdar, fotinakis, stevschmid, ldnunes, aaronrenner and all of our contributors for making swagger-docs even better.
 
+## Related Projects
+
+**[@fotinakis](https://github.com/fotinakis/)** has created Swagger::Blocks - a DSL for pure Ruby code blocks: [swagger-blocks](https://github.com/fotinakis/swagger-blocks/)
+
 ## More About Me
 
 [Rich Hollis](http://richhollis.co.uk)
