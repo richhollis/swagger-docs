@@ -1,4 +1,8 @@
-## 0.1.9 (next release - not released yet)
+## 0.1.10
+
+(next release - not released yet)
+
+## 0.1.9
 
 - Adding support for multiple engines #65
 - Add ability for swagger_api to accept parameters (e.g. consumes, produces)
