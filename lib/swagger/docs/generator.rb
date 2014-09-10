@@ -123,7 +123,11 @@ module Swagger
 
         def process_path(path, root, config, settings)
           return {action: :skipped, reason: :empty_path} if path.empty?
-          klass = "#{path.to_s.camelize}Controller".constantize rescue nil
+          begin
+            klass = "#{path.to_s.camelize}Controller".constantize
+          rescue => e
+            puts e if ENV['SHOW_SWAGGER_ERRORS']
+          end
           return {action: :skipped, path: path, reason: :klass_not_present} if !klass
           return {action: :skipped, path: path, reason: :not_swagger_resource} if !klass.methods.include?(:swagger_config) or !klass.swagger_config[:controller]
           apis, models, defined_nicknames = [], {}, []

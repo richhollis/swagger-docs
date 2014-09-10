@@ -275,6 +275,12 @@ rake swagger:docs
 
 Swagger-ui JSON files should now be present in your api_file_path (e.g. ./public/api/v1)
 
+If a file is unexpectedly skipped, there may have been an error loading it, which swagger-docs swallows by default. To
+see the error messages run:
+```
+SHOW_SWAGGER_ERRORS=1 rake swagger:docs
+```
+
 ### Sample
 
 A sample Rails application where you can run the above rake command and view the output in swagger-ui can be found here:
@@ -310,7 +316,7 @@ end
 ```
 
 If you want swagger to find controllers in `Rails.application` and/or multiple
-engines you can override `base_application` to return an array. 
+engines you can override `base_application` to return an array.
 
 ```ruby
 class Swagger::Docs::Config
