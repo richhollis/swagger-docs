@@ -33,6 +33,22 @@ module Swagger
           # This is only for overriding, so don't perform any path transformations by default.
           path
         end
+
+        def log_exception
+          yield
+          rescue => e
+            write_log(:error, e)
+            raise
+        end
+
+        def log_env_name
+          'SD_LOG_LEVEL'
+        end
+
+        def write_log(type, output)
+          $stderr.puts output if type == :error and ENV[log_env_name]=="1"
+        end
+
       end
     end
   end

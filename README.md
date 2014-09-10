@@ -275,6 +275,20 @@ rake swagger:docs
 
 Swagger-ui JSON files should now be present in your api_file_path (e.g. ./public/api/v1)
 
+#### Additional logging for generation failures
+
+Errors aren't displayed by default. To see all error messages use the ```SD_LOG_LEVEL``` environment variable when running the rake task:
+
+```
+SD_LOG_LEVEL=1 rake swagger:docs
+```
+
+Currently only constantize errors are shown.
+
+Errors are written to ```$stderr```. Error logging methods can be found in ```Config``` and can be overridden for custom behaviour.
+
+Thanks to **[@tomtt](https://github.com/tomtt/)** who originally suggested this idea in #81
+
 ### Sample
 
 A sample Rails application where you can run the above rake command and view the output in swagger-ui can be found here:
