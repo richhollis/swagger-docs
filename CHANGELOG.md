@@ -1,6 +1,6 @@
 ## 0.1.10
 
-(next release - not released yet)
+Additional logging for generation failures (suggested in #81)
 
 ## 0.1.9
 
