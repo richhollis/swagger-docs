@@ -198,6 +198,25 @@ class Api::V1::UsersController < ApplicationController
 end
 ```
 
+#### Array Response Classes
+
+```ruby
+class Api::V1::UsersController < ApplicationController
+  swagger_controller :users, "User Management"
+
+  swagger_api :index do
+    type "array"
+    items "$ref" => "User"
+  end
+
+  swagger_model "User" do
+    property :id, :integer, :required
+    property :name, :string, :required
+  end
+
+end
+```
+
 ### DRYing up common documentation
 
 Suppose you have a header or a parameter that must be present on several controllers and methods. Instead of duplicating it on all the controllers you can do this on your API base controller:
@@ -324,7 +343,7 @@ end
 ```
 
 If you want swagger to find controllers in `Rails.application` and/or multiple
-engines you can override `base_application` to return an array. 
+engines you can override `base_application` to return an array.
 
 ```ruby
 class Swagger::Docs::Config
