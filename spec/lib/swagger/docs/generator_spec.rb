@@ -381,4 +381,74 @@ describe Swagger::Docs::Generator do
       end
     end
   end
+  context "with controller base path scoped" do
+    let(:config) { Swagger::Docs::Config.register_apis({
+       DEFAULT_VER => {
+        :controller_base_path => "api/v1", 
+        :scoped => true,
+        :api_file_path => "#{tmp_dir}", 
+        :base_path => "http://api.no.where",
+        :attributes => {
+          :info => {
+            "title" => "Swagger Sample App",
+            "description" => "This is a sample description.",
+            "termsOfServiceUrl" => "http://helloreverb.com/terms/",
+            "contact" => "apiteam@wordnik.com",
+            "license" => "Apache 2.0",
+            "licenseUrl" => "http://www.apache.org/licenses/LICENSE-2.0.html"
+          }
+        } 
+      }
+    })}
+    let(:file_resource) { tmp_dir + 'sample.json' }
+    before(:each) do
+      allow(Rails).to receive_message_chain(:application, :routes, :routes).and_return(routes)
+      Swagger::Docs::Generator.set_real_methods
+      require "fixtures/controllers/sample_controller"
+      require "fixtures/controllers/nested_controller"
+    end
+    describe "#write_docs" do
+      before(:each) do
+        generate(config)
+      end
+      context "resources files" do
+        let(:resources) { file_resources.read }
+        let(:response) { JSON.parse(resources) }
+        it "writes version correctly" do
+          expect(response["apiVersion"]).to eq DEFAULT_VER
+        end
+        it "writes swaggerVersion correctly" do
+          expect(response["swaggerVersion"]).to eq "1.2"
+        end
+        it "writes basePath correctly" do
+          expect(response["basePath"]).to eq "http://api.no.where/"
+        end
+        it "writes apis correctly" do
+          expect(response["apis"].count).to eq 2
+        end
+        it "writes api path correctly" do
+          expect(response["apis"][0]["path"]).to eq "sample.{format}"
+        end
+        it "writes api description correctly" do
+          expect(response["apis"][0]["description"]).to eq "User Management"
+        end
+      end
+      context "nested resource file" do
+        let(:resource) { file_resource_nested.read }
+        let(:response) { JSON.parse(resource) }
+        let(:apis) { response["apis"] }
+        context "apis" do
+          context "show" do
+            let(:api) { get_api_operation(apis, "nested/{nested_id}/nested_sample", :get) }
+            let(:operations) { get_api_operations(apis, "nested/{nested_id}/nested_sample") }
+            context "parameters" do
+              it "has correct count" do
+                expect(api["parameters"].count).to eq 2
+              end
+            end
+          end
+        end
+      end
+    end
+  end
 end

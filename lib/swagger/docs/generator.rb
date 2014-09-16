@@ -204,7 +204,7 @@ module Swagger
         def get_settings(api_version, config)
           base_path = trim_trailing_slash(config[:base_path] || "")
           controller_base_path = trim_leading_slash(config[:controller_base_path] || "")
-          base_path += "/#{controller_base_path}" unless controller_base_path.empty?
+          base_path += "/#{controller_base_path}" unless controller_base_path.empty? || config[:scoped]
           api_file_path = config[:api_file_path]
           settings = {
             base_path: base_path,
