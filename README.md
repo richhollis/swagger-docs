@@ -205,7 +205,6 @@ Suppose you have a header or a parameter that must be present on several control
 ```ruby
 class Api::BaseController < ActionController::Base
   class << self
-    Swagger::Docs::Generator::set_real_methods
 
     def inherited(subclass)
       super
