@@ -228,6 +228,39 @@ end
 
 And then use it as a superclass to all you API controllers. All the subclassed controllers will have the same documentation applied to them.
 
+#### Alternate method
+
+Using a block for the swagger_api definition:
+
+```ruby
+class Api::V1::UserController < Api::V1::BaseController
+
+  swagger_controller :user, "Users"
+
+  def self.add_common_params(api)
+    api.param :form, "user[first_name]", :string, :optional, "Notes"
+    api.param :form, "user[last_name]", :string, :optional, "Name"
+    api.param :form, "user[email]", :string, :optional, "Email"
+  end
+
+  swagger_api :create do |api|
+    summary "Create a new User item"
+    Api::V1::UserController::add_common_params(api)
+    response :unauthorized
+    response :not_acceptable
+    response :unprocessable_entity
+  end
+  
+  swagger_api :update do |api|
+    summary "Update an existing User item"
+    Api::V1::UserController::add_common_params(api)
+    response :unauthorized
+    response :not_acceptable
+    response :unprocessable_entity
+  end
+end
+```
+
 ### DSL Methods
 
 <table>
