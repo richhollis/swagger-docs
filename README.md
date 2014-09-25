@@ -707,6 +707,9 @@ Thanks to jdar, fotinakis, stevschmid, ldnunes, aaronrenner and all of our contr
 
 **[@fotinakis](https://github.com/fotinakis/)** has created Swagger::Blocks - a DSL for pure Ruby code blocks: [swagger-blocks](https://github.com/fotinakis/swagger-blocks/)
 
+A [cors rack middleware for testing swagger apis](https://gist.github.com/richhollis/b98a8b0599860145ad86) designed to be used in Rails development environments.
+
+
 ## More About Me
 
 [Rich Hollis](http://richhollis.co.uk)
