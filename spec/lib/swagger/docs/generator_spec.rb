@@ -53,6 +53,17 @@ describe Swagger::Docs::Generator do
       it "writes api path correctly" do
         expect(response["apis"][0]["path"]).to eq "api/v1/sample.{format}"
       end
+
+      context "api_file_name" do
+        let(:api_file_name) { 'swagger-docs.json' }
+        let(:config) {{
+          DEFAULT_VER => {
+            :api_file_path => tmp_dir,
+            :api_file_name => api_file_name }
+        }}
+        let(:file_resources) { tmp_dir + api_file_name }
+        specify { expect(File.exists? file_resources).to be true }
+      end
     end
     context "resource file" do
       let(:resource) { file_resource.read }
