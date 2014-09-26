@@ -1,6 +1,7 @@
-## 0.1.10
+## 0.1.10 (not released)
 
-Additional logging for generation failures (suggested in #81)
+- Additional logging for generation failures (suggested in #81)
+- Added api_file_name to config #88
 
 ## 0.1.9
 
