@@ -9,7 +9,7 @@ module Api
         summary "Fetches all User items"
         param :query, :page, :integer, :optional, "Page number"
         param :path, :nested_id, :integer, :optional, "Team Id"
-        response :success, "Some text", :Tag
+        response :ok, "Some text", :Tag
         response :unauthorized
         response :not_acceptable, "The request you made is not acceptable"
         response :requested_range_not_satisfiable
@@ -63,7 +63,7 @@ module Api
       swagger_api :context_dependent do
         summary "An action dependent on the context of the controller " +
           "class. Right now it is: " + ApplicationController.context
-        response :success
+        response :ok
         response :unauthorized
       end
 
