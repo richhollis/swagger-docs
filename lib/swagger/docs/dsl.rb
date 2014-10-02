@@ -72,7 +72,12 @@ module Swagger
         }
 
         def self.alias_for(status)
-          CODE_ALIASES.fetch(status, status)
+          status_alias = CODE_ALIASES.fetch(status, status)
+          unless status_alias == status
+            warn "[DEPRECATION] `:#{status}` response code is deprecated. Please use `:#{status_alias}` instead."
+          end
+
+          status_alias
         end
       end
     end
