@@ -6,7 +6,7 @@ describe Swagger::Docs::Config do
 
   let(:test_controller) { Class.new }
 
-  before(:each) do 
+  before(:each) do
     stub_const('ActionController::Base', ApplicationController)
   end
 
@@ -19,7 +19,17 @@ describe Swagger::Docs::Config do
     it "allows assignment of another class" do
       subject.base_api_controller = test_controller
       expect(subject.base_api_controller).to eq(test_controller)
-    end 
+    end
+  end
+
+  describe "::base_api_controllers" do
+    it "returns an array with ActionController::Base by default" do
+      expect(subject.base_api_controllers).to eq([ActionController::Base])
+    end
+    it "allows assignment of multiple classes" do
+      subject.base_api_controllers = [test_controller, ActionController::Base]
+      expect(subject.base_api_controllers).to eq([test_controller, ActionController::Base])
+    end
   end
 
   describe "::base_application" do
@@ -34,6 +44,5 @@ describe Swagger::Docs::Config do
       expect(subject.base_applications).to eq [:app]
     end
   end
-
 
  end

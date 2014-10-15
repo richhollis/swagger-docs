@@ -105,8 +105,8 @@ The following table shows all the current configuration options and their defaul
 </tr>
 
 <tr>
-<td><b>base_api_controller</b></td>
-<td>The base controller class your project uses; it or its subclasses will be where you call swagger_controller and swagger_api.</td>
+<td><b>base_api_controller / base_api_controllers</b></td>
+<td>The base controller class your project uses; it or its subclasses will be where you call swagger_controller and swagger_api. An array of base controller classes may be provided.</td>
 <td>ActionController::Base</td>
 </tr>
 
