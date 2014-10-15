@@ -17,7 +17,7 @@ module Swagger
         end
 
         def base_application
-          Rails.application 
+          Rails.application
         end
 
         def register_apis(versions)
@@ -28,7 +28,7 @@ module Swagger
         def registered_apis
           @versions ||= {}
         end
-        
+
         def transform_path(path, api_version)
           # This is only for overriding, so don't perform any path transformations by default.
           path

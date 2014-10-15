@@ -55,6 +55,8 @@ Swagger::Docs::Config.register_apis({
     :api_file_path => "public/api/v1/",
     # the URL base path to your API
     :base_path => "http://api.somedomain.com",
+    # if you don't pass API version in URL
+    # :exclude_api_version_in_path => true,
     # if you want to delete all .json files at each generation
     :clean_directory => false,
     # add custom attributes to api-docs
@@ -102,6 +104,12 @@ The following table shows all the current configuration options and their defaul
 <td><b>base_path</b></td>
 <td>The URI base path for your API - e.g. api.somedomain.com</td>
 <td>/</td>
+</tr>
+
+<tr>
+<td><b>exclude_api_version_in_path</b></td>
+<td>Set to true, if you don't have API version specified in url - e.g. /api/action, not /api/v1/action</td>
+<td>nil</td>
 </tr>
 
 <tr>
@@ -250,7 +258,7 @@ class Api::V1::UserController < Api::V1::BaseController
     response :not_acceptable
     response :unprocessable_entity
   end
-  
+
   swagger_api :update do |api|
     summary "Update an existing User item"
     Api::V1::UserController::add_common_params(api)
@@ -357,7 +365,7 @@ end
 ```
 
 If you want swagger to find controllers in `Rails.application` and/or multiple
-engines you can override `base_application` to return an array. 
+engines you can override `base_application` to return an array.
 
 ```ruby
 class Swagger::Docs::Config
