@@ -1,3 +1,5 @@
+require 'swagger/docs/slash_trimmer'
+
 module Swagger
   module Docs
     class ApiDeclarationFile
@@ -45,7 +47,7 @@ module Swagger
       end
 
       def resource_file_path
-        trim_leading_slash(debased_path.to_s.underscore)
+        SlashTrimmer.trim_leading_slashes(debased_path.to_s.underscore)
       end
 
       def models
@@ -82,11 +84,6 @@ module Swagger
 
       def debased_path
         path.gsub("#{controller_base_path}", "")
-      end
-
-      def trim_leading_slash(str)
-        return str if !str
-        str.gsub(/\A\/+/, '')
       end
 
       def camelize_keys_deep(obj)
