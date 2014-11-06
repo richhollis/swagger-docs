@@ -42,6 +42,10 @@ module Swagger
         metadata.camelize_model_properties
       end
 
+      def authorizations
+        metadata.authorizations
+      end
+
       def resource_path
         demod
       end
@@ -58,12 +62,13 @@ module Swagger
 
       def build_resource_root_hash
         {
-          "apiVersion" => api_version,
-          "swaggerVersion" => swagger_version,
-          "basePath" => base_path,
-          "resourcePath" => resource_path,
-          "apis" => apis,
-          "resourceFilePath" => resource_file_path
+          "apiVersion"       => api_version,
+          "swaggerVersion"   => swagger_version,
+          "basePath"         => base_path,
+          "resourcePath"     => resource_path,
+          "apis"             => apis,
+          "resourceFilePath" => resource_file_path,
+          "authorizations"   => authorizations
         }
       end
 
