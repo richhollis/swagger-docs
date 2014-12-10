@@ -51,5 +51,18 @@ describe Swagger::Docs::ApiDeclarationFileMetadata do
 
       expect(metadata.camelize_model_properties).to eq(false)
     end
+
+    it "defaults the authorizations property to empty hash" do
+      metadata = described_class.new("1.0", "path", "basePath", "controllerBasePath")
+
+      expect(metadata.authorizations).to eq({})
+    end
+
+    it "allows the authorizations property to be overidden" do
+      authorizations = {foo: 'bar'}
+      metadata = described_class.new("1.0", "path", "basePath", "controllerBasePath", authorizations: authorizations)
+
+      expect(metadata.authorizations).to eq(authorizations)
+    end
   end
 end

@@ -1,3 +1,5 @@
+require 'swagger/docs/slash_trimmer'
+
 module Swagger
   module Docs
     class ApiDeclarationFile
@@ -40,12 +42,16 @@ module Swagger
         metadata.camelize_model_properties
       end
 
+      def authorizations
+        metadata.authorizations
+      end
+
       def resource_path
         demod
       end
 
       def resource_file_path
-        trim_leading_slash(debased_path.to_s.underscore)
+        SlashTrimmer.trim_leading_slashes(debased_path.to_s.underscore)
       end
 
       def models
@@ -56,12 +62,13 @@ module Swagger
 
       def build_resource_root_hash
         {
-          "apiVersion" => api_version,
-          "swaggerVersion" => swagger_version,
-          "basePath" => base_path,
-          "resourcePath" => resource_path,
-          "apis" => apis,
-          "resourceFilePath" => resource_file_path
+          "apiVersion"       => api_version,
+          "swaggerVersion"   => swagger_version,
+          "basePath"         => base_path,
+          "resourcePath"     => resource_path,
+          "apis"             => apis,
+          "resourceFilePath" => resource_file_path,
+          "authorizations"   => authorizations
         }
       end
 
@@ -82,11 +89,6 @@ module Swagger
 
       def debased_path
         path.gsub("#{controller_base_path}", "")
-      end
-
-      def trim_leading_slash(str)
-        return str if !str
-        str.gsub(/\A\/+/, '')
       end
 
       def camelize_keys_deep(obj)

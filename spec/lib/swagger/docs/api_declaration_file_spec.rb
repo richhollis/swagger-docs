@@ -63,7 +63,8 @@ describe Swagger::Docs::ApiDeclarationFile do
         "apis"=> declaration.apis,
         "resourcePath"=> declaration.resource_path,
         :models=> declaration.models,
-        "resourceFilePath" => declaration.resource_file_path
+        "resourceFilePath" => declaration.resource_file_path,
+        "authorizations" => {}
       }
       expect(declaration.generate_resource).to eq(expected_response)
     end

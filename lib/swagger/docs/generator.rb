@@ -1,3 +1,5 @@
+require 'swagger/docs/slash_trimmer'
+
 module Swagger
   module Docs
     class Generator
@@ -61,7 +63,13 @@ module Swagger
         end
 
         def generate_doc(api_version, settings, config)
-          root = { "apiVersion" => api_version, "swaggerVersion" => "1.2", "basePath" => settings[:base_path] + "/", :apis => [] }
+          root = {
+            "apiVersion" => api_version,
+            "swaggerVersion" => "1.2",
+            "basePath" => settings[:base_path] + "/",
+            :apis => [],
+            :authorizations => settings[:authorizations]
+          }
           results = {:processed => [], :skipped => []}
           resources = []
 
@@ -72,7 +80,7 @@ module Swagger
               resources << generate_resource(ret[:path], ret[:apis], ret[:models], settings, root, config)
               debased_path = get_debased_path(ret[:path], settings[:controller_base_path])
               resource_api = {
-                path: "#{Config.transform_path(trim_leading_slash(debased_path), api_version)}.{format}",
+                path: "#{Config.transform_path(SlashTrimmer.trim_leading_slashes(debased_path), api_version)}.{format}",
                 description: ret[:klass].swagger_config[:description]
               }
               root[:apis] << resource_api
@@ -90,7 +98,7 @@ module Swagger
           api_path.gsub!('(.:format)', extension ? ".#{extension}" : '')
           api_path.gsub!(/:(\w+)/, '{\1}')
           api_path.gsub!(controller_base_path, '')
-          trim_slashes(api_path)
+          SlashTrimmer.trim_slashes(api_path)
         end
 
         def camelize_keys_deep!(h)
@@ -107,20 +115,6 @@ module Swagger
           end
         end
 
-        def trim_leading_slash(str)
-          return str if !str
-          str.gsub(/\A\/+/, '')
-        end
-
-        def trim_trailing_slash(str)
-          return str if !str
-          str.gsub(/\/+\z/, '')
-        end
-
-        def trim_slashes(str)
-          trim_leading_slash(trim_trailing_slash(str))
-        end
-
         def get_debased_path(path, controller_base_path)
           path.gsub("#{controller_base_path}", "")
         end
@@ -132,7 +126,7 @@ module Swagger
           return {action: :skipped, path: path, reason: :not_swagger_resource} if !klass.methods.include?(:swagger_config) or !klass.swagger_config[:controller]
           apis, models, defined_nicknames = [], {}, []
           routes.select{|i| i.defaults[:controller] == path}.each do |route|
-            unless nickname_defined?(defined_nicknames, path, route) # only add once for each route once e.g. PATCH, PUT 
+            unless nickname_defined?(defined_nicknames, path, route) # only add once for each route once e.g. PATCH, PUT
               ret = get_route_path_apis(path, route, klass, settings, config)
               apis = apis + ret[:apis]
               models.merge!(ret[:models])
@@ -143,7 +137,7 @@ module Swagger
         end
 
         def route_verb(route)
-          if defined?(route.verb.source) then route.verb.source.to_s.delete('$'+'^') else route.verb end.downcase.to_sym 
+          if defined?(route.verb.source) then route.verb.source.to_s.delete('$'+'^') else route.verb end.downcase.to_sym
         end
 
         def path_route_nickname(path, route)
@@ -159,10 +153,12 @@ module Swagger
         end
 
         def generate_resource(path, apis, models, settings, root, config)
-          metadata = ApiDeclarationFileMetadata.new(root["apiVersion"], path, root["basePath"],
-                                                   settings[:controller_base_path],
-                                                   camelize_model_properties: config.fetch(:camelize_model_properties, true),
-                                                   swagger_version: root["swaggerVersion"])
+          metadata = ApiDeclarationFileMetadata.new(
+            root["apiVersion"], path, root["basePath"],
+            settings[:controller_base_path],
+            camelize_model_properties: config.fetch(:camelize_model_properties, true),
+            swagger_version: root["swaggerVersion"],
+            authorizations: root[:authorizations])
           declaration = ApiDeclarationFile.new(metadata, apis, models)
           declaration.generate_resource
         end
@@ -206,14 +202,17 @@ module Swagger
         end
 
         def get_settings(api_version, config)
-          base_path = trim_trailing_slash(config[:base_path] || "")
-          controller_base_path = trim_leading_slash(config[:controller_base_path] || "")
+          base_path = SlashTrimmer.trim_trailing_slashes(config[:base_path] || "")
+          controller_base_path = SlashTrimmer.trim_leading_slashes(config[:controller_base_path] || "")
           base_path += "/#{controller_base_path}" unless controller_base_path.empty?
           api_file_path = config[:api_file_path]
+          authorizations = config[:authorizations]
+
           settings = {
             base_path: base_path,
             controller_base_path: controller_base_path,
-            api_file_path: api_file_path
+            api_file_path: api_file_path,
+            authorizations: authorizations
           }.freeze
         end
 
