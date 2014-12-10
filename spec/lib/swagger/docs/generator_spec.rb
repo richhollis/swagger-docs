@@ -286,6 +286,9 @@ describe Swagger::Docs::Generator do
             it "writes responseModel attribute" do
               expect(api["responseMessages"].find{|m| m["responseModel"] == "Tag"}).to_not be_nil
             end
+            it "writes response code as 200" do
+              expect(api["responseMessages"].find{|m| m["responseModel"] == "Tag"}["code"]).to eq 200
+            end
             #"parameters"=>[
             # {"paramType"=>"query", "name"=>"page", "type"=>"integer", "description"=>"Page number", "required"=>false},
             # {"paramType"=>"path", "name"=>"nested_id", "type"=>"integer", "description"=>"Team Id", "required"=>false}], "responseMessages"=>[{"code"=>401, "message"=>"Unauthorized"}, {"code"=>406, "message"=>"The request you made is not acceptable"}, {"code"=>416, "message"=>"Requested Range Not Satisfiable"}], "method"=>"get", "nickname"=>"Api::V1::Sample#index"}
@@ -325,13 +328,13 @@ describe Swagger::Docs::Generator do
                 expect(response_msgs.count).to eq 4
               end
               it "writes code correctly" do
-                expect(response_msgs.first["code"]).to eq 401
+                expect(response_msgs.first["code"]).to eq 200
               end
               it "writes message correctly" do
-                expect(response_msgs.first["message"]).to eq "Unauthorized"
+                expect(response_msgs.first["message"]).to eq "Some text"
               end
               it "writes specified message correctly" do
-                expect(response_msgs[1]["message"]).to eq "The request you made is not acceptable"
+                expect(response_msgs[1]["message"]).to eq "Unauthorized"
               end
             end
           end

@@ -58,12 +58,27 @@ module Swagger
 
       def response(status, text = nil, model = nil)
         if status.is_a? Symbol
-          status_code = Rack::Utils.status_code(status)
+          status_code = Rack::Utils.status_code(StatusCodes.alias_for(status))
           response_messages << {:code => status_code, :responseModel => model, :message => text || status.to_s.titleize}
         else
           response_messages << {:code => status, :responseModel => model, :message => text}
         end
         response_messages.sort_by!{|i| i[:code]}
+      end
+
+      class StatusCodes
+        CODE_ALIASES = {
+          success: :ok
+        }
+
+        def self.alias_for(status)
+          status_alias = CODE_ALIASES.fetch(status, status)
+          unless status_alias == status
+            warn "[DEPRECATION] `:#{status}` response code is deprecated. Please use `:#{status_alias}` instead."
+          end
+
+          status_alias
+        end
       end
     end
 
