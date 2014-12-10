@@ -8,9 +8,15 @@ module Swagger
           @@base_api_controller || ActionController::Base
         end
 
+        def base_api_controllers
+          Array(base_api_controller)
+        end
+
         def base_api_controller=(controller)
           @@base_api_controller = controller
         end
+
+        alias_method :base_api_controllers=, :base_api_controller=
 
         def base_applications
           Array(base_application)
@@ -21,7 +27,9 @@ module Swagger
         end
 
         def register_apis(versions)
-          base_api_controller.send(:include, ImpotentMethods)
+          base_api_controllers.each do |controller|
+            controller.send(:include, ImpotentMethods)
+          end
           @versions = versions
         end
 
