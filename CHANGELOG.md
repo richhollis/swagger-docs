@@ -2,6 +2,8 @@
 
 - Additional logging for generation failures (suggested in #81)
 - Added api_file_name to config #88
+- Add support for multiple base api controllers. #93
+- Change success status to ok #89
 
 ## 0.1.9
 
