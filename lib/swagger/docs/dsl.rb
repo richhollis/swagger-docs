@@ -104,6 +104,12 @@ module Swagger
         }.merge!(hash)
         self.required << name if required == :required
       end
+      
+      # helper method to generate enums
+      def property_list(name, type, required, description = nil, allowed_values = [], hash = {})
+        hash.merge!({allowable_values: {value_type: "LIST", values: allowed_values}})
+        property(name, type, required, description, hash)
+      end
     end
   end
 end

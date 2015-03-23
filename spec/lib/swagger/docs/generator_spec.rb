@@ -386,6 +386,18 @@ describe Swagger::Docs::Generator do
                 "id" => {
                   "type" => "integer",
                   "description" => "User Id",
+                },
+                "type" => {
+                  "type" => "string",
+                  "description" => "Type",
+                  "allowableValues" => {
+                    "valueType" => "LIST",
+                    "values" => [
+                      "info",
+                      "warning",
+                      "error"
+                    ]
+                  }
                 }
               }
             }
