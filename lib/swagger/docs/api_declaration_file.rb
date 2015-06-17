@@ -59,7 +59,7 @@ module Swagger
           "apiVersion" => api_version,
           "swaggerVersion" => swagger_version,
           "basePath" => base_path,
-          "resourcePath" => resource_path,
+          "resourcePath" => "/#{resource_path}",
           "apis" => apis,
           "resourceFilePath" => resource_file_path
         }
