@@ -130,6 +130,7 @@ module Swagger
           klass = Config.log_exception { "#{path.to_s.camelize}Controller".constantize } rescue nil
           return {action: :skipped, path: path, reason: :klass_not_present} if !klass
           return {action: :skipped, path: path, reason: :not_swagger_resource} if !klass.methods.include?(:swagger_config) or !klass.swagger_config[:controller]
+          return {action: :skipped, path: path, reason: :not_kind_of_parent_controller} if config[:parent_controller] && !klass < config[:parent_controller]
           apis, models, defined_nicknames = [], {}, []
           routes.select{|i| i.defaults[:controller] == path}.each do |route|
             unless nickname_defined?(defined_nicknames, path, route) # only add once for each route once e.g. PATCH, PUT 
