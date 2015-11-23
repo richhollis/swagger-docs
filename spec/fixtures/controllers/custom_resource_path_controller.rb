@@ -3,7 +3,7 @@ module Api
     class SuperclassController < ApplicationController
     end
     class CustomResourcePathController < SuperclassController
-      swagger_controller :custom_resource_path, "User Management", resource_path: "testing"
+      swagger_controller :custom_resource_path, "User Management", resource_path: "resource/testing"
 
       swagger_api :index do
         summary "Fetches all User items"

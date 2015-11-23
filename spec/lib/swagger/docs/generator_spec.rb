@@ -405,7 +405,7 @@ describe Swagger::Docs::Generator do
         let(:apis) { response["apis"] }
         # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
         it "writes resourcePath correctly" do
-          expect(response["resourcePath"]).to eq "testing"
+          expect(response["resourcePath"]).to eq "resource/testing"
         end
       end
     end
