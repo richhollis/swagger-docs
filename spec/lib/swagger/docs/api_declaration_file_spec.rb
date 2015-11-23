@@ -93,6 +93,22 @@ describe Swagger::Docs::ApiDeclarationFile do
     end
   end
 
+  describe "#resource_path" do
+    it "returns the debased controller path" do
+      metadata = double("metadata", overridden_resource_path: nil, controller_base_path: "/hello", path: "/hello/test-endpoint")
+      declaration = described_class.new(metadata, apis, models)
+      expect(declaration.resource_path).to eq("test_endpoint")
+    end
+
+    context "with an overridden_resource_path" do
+      it "returns the overriden resource path directly" do
+        metadata = double("metadata", overridden_resource_path: "testing-path", controller_base_path: "/hello", path: "/hello/test-endpoint")
+        declaration = described_class.new(metadata, apis, models)
+        expect(declaration.resource_path).to eq("testing-path")
+      end
+    end
+  end
+
   describe "#swagger_version" do
     it "returns metadata.swagger_version" do
       metadata = double("metadata", swagger_version: "1.2")
