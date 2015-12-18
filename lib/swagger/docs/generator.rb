@@ -142,8 +142,8 @@ module Swagger
           {action: :processed, path: path, apis: apis, models: models, klass: klass}
         end
 
-        def route_verb(route)
-          if defined?(route.verb.source) then route.verb.source.to_s.delete('$'+'^') else route.verb end.downcase.to_sym 
+        def route_verbs(route)
+          if defined?(route.verb.source) then route.verb.source.to_s.delete('$'+'^').split('|') else [route.verb] end.collect{|verb| verb.downcase.to_sym}
         end
 
         def path_route_nickname(path, route)
@@ -152,7 +152,6 @@ module Swagger
         end
 
         def nickname_defined?(defined_nicknames, path, route)
-          verb = route_verb(route)
           target_nickname = path_route_nickname(path, route)
           defined_nicknames.each{|nickname| return true if nickname == target_nickname }
           false
@@ -174,17 +173,20 @@ module Swagger
         def get_route_path_apis(path, route, klass, settings, config)
           models, apis = {}, []
           action = route.defaults[:action]
-          verb = route_verb(route)
-          return {apis: apis, models: models, nickname: nil} if !operations = klass.swagger_actions[action.to_sym]
-          operations = Hash[operations.map {|k, v| [k.to_s.gsub("@","").to_sym, v.respond_to?(:deep_dup) ? v.deep_dup : v.dup] }] # rename :@instance hash keys
-          operations[:method] = verb
-          nickname = operations[:nickname] = path_route_nickname(path, route)
+          verbs = route_verbs(route)
+          return {apis: apis, models: models, nickname: nil} if !operation = klass.swagger_actions[action.to_sym]
+          operation = Hash[operation.map {|k, v| [k.to_s.gsub("@","").to_sym, v.respond_to?(:deep_dup) ? v.deep_dup : v.dup] }] # rename :@instance hash keys
+          nickname = operation[:nickname] = path_route_nickname(path, route)
 
           route_path = if defined?(route.path.spec) then route.path.spec else route.path end
           api_path = transform_spec_to_api_path(route_path, settings[:controller_base_path], config[:api_extension_type])
-          operations[:parameters] = filter_path_params(api_path, operations[:parameters]) if operations[:parameters]
-
-          apis << {:path => api_path, :operations => [operations]}
+          operation[:parameters] = filter_path_params(api_path, operation[:parameters]) if operation[:parameters]
+          operations = verbs.collect{|verb|
+            op = operation.dup
+            op[:method] = verb
+            op
+          }
+          apis << {:path => api_path, :operations => operations}
           models = get_klass_models(klass)
 
           {apis: apis, models: models, nickname: nickname}
