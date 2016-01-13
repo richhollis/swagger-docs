@@ -1,3 +1,7 @@
+## 0.2.3
+
+- Added property_list to SwaggerModelDSL #108 @dr-impossible
+
 ## 0.2.2
 
 - Support multiple route methods #128 @frodrigo

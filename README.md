@@ -201,6 +201,9 @@ class Api::V1::UsersController < ApplicationController
     property_list :type, :string, :optional, "Tag Type", ["info", "warning", "error"]
   end
 
+  # Support for enums (PR #108)
+  property_list :type, :string, :optional, "Type", ["info", "warning", "error"]
+
 end
 ```
 
