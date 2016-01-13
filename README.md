@@ -135,6 +135,14 @@ The following table shows all the current configuration options and their defaul
 <td>true</td>
 </tr>
 
+<tr>
+<td><b>parent_controller</b></td>
+<td>Assign a different controller to use for the configuration</td>
+<td>ClassName</td>
+</tr>
+
+
+
 </tbody>
 </table>
 
@@ -202,11 +210,13 @@ class Api::V1::UsersController < ApplicationController
     property :name, :string, :optional, "Name"
     property_list :type, :string, :optional, "Tag Type", ["info", "warning", "error"]
   end
-
-  # Support for enums (PR #108)
-  property_list :type, :string, :optional, "Type", ["info", "warning", "error"]
-
 end
+```
+
+#### Support for Enums (PR #108)
+
+```
+property_list :type, :string, :optional, "Type", ["info", "warning", "error"]
 ```
 
 ### DRYing up common documentation

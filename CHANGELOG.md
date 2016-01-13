@@ -1,3 +1,7 @@
+## 0.2.4
+
+- Parent controller option for register_apis config. #123 @mskubenich
+
 ## 0.2.3
 
 - Added property_list to SwaggerModelDSL #108 @dr-impossible
