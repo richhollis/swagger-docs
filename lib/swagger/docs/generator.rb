@@ -61,7 +61,13 @@ module Swagger
         end
 
         def generate_doc(api_version, settings, config)
-          root = { "apiVersion" => api_version, "swaggerVersion" => "1.2", "basePath" => settings[:base_path], :apis => [] }
+          root = { 
+            "apiVersion" => api_version, 
+            "swaggerVersion" => "1.2", 
+            "basePath" => settings[:base_path], 
+            :apis => [],
+            :authorizations => settings[:authorizations]
+          }
           results = {:processed => [], :skipped => []}
           resources = []
 
@@ -159,10 +165,13 @@ module Swagger
         end
 
         def generate_resource(path, apis, models, settings, root, config)
-          metadata = ApiDeclarationFileMetadata.new(root["apiVersion"], path, root["basePath"],
-                                                   settings[:controller_base_path],
-                                                   camelize_model_properties: config.fetch(:camelize_model_properties, true),
-                                                   swagger_version: root["swaggerVersion"])
+          metadata = ApiDeclarationFileMetadata.new(
+            root["apiVersion"], path, root["basePath"],
+            settings[:controller_base_path],
+            camelize_model_properties: config.fetch(:camelize_model_properties, true),
+            swagger_version: root["swaggerVersion"],
+            authorizations: root[:authorizations]
+          )
           declaration = ApiDeclarationFile.new(metadata, apis, models)
           declaration.generate_resource
         end
@@ -210,10 +219,12 @@ module Swagger
           controller_base_path = trim_leading_slash(config[:controller_base_path] || "")
           base_path += "/#{controller_base_path}" unless controller_base_path.empty?
           api_file_path = config[:api_file_path]
+          authorizations = config[:authorizations]
           settings = {
             base_path: base_path,
             controller_base_path: controller_base_path,
-            api_file_path: api_file_path
+            api_file_path: api_file_path,
+            authorizations: authorizations
           }.freeze
         end
 

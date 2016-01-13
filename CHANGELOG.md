@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Add support for Authorizations (OAuth 2.0) - Thanks to @RKushnir #97
+
 ## 0.2.0
 
 - Additional logging for generation failures (suggested in #81)

@@ -52,6 +52,10 @@ module Swagger
         normalize_model_properties @models
       end
 
+      def authorizations
+        metadata.authorizations
+      end
+
       private
 
       def build_resource_root_hash
@@ -61,7 +65,8 @@ module Swagger
           "basePath" => base_path,
           "resourcePath" => resource_path,
           "apis" => apis,
-          "resourceFilePath" => resource_file_path
+          "resourceFilePath" => resource_file_path,
+          "authorizations"   => authorizations
         }
       end
 
