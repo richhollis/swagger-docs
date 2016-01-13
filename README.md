@@ -10,6 +10,11 @@ Generates swagger-ui json files for rails apps with APIs. You add the swagger DS
 [gemnasium]: https://gemnasium.com/richhollis/swagger-docs
 [coveralls]: https://coveralls.io/r/richhollis/swagger-docs
 
+## Swagger Version Specification Support
+
+This project supports elements of the v1.2 swagger specification. It *does not* support the v2 specification. If you are looking for support for the newer specification the please see the [swagger-blocks](https://github.com/fotinakis/swagger-blocks/) project. I don't currently have any plans to add support for v2.0 at this time.
+
+## Example usage
 
 Here is an extract of the DSL from a user controller API class:
 
