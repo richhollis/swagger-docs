@@ -1,9 +1,10 @@
-## 0.1.10 (not released)
+## 0.2.0
 
 - Additional logging for generation failures (suggested in #81)
 - Added api_file_name to config #88
 - Add support for multiple base api controllers. #93
 - Change success status to ok #89
+- Address issue with missing slashes - remove trailing slash from base paths and add slash before api paths #117
 
 ## 0.1.9
 

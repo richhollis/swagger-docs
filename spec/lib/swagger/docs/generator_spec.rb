@@ -32,7 +32,7 @@ describe Swagger::Docs::Generator do
   context "without controller base path" do
     let(:config) {
       {
-        DEFAULT_VER => {:api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where"}
+        DEFAULT_VER => {:api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where/"}
       }
     }
     before(:each) do
@@ -45,13 +45,13 @@ describe Swagger::Docs::Generator do
       let(:resources) { file_resources.read }
       let(:response) { JSON.parse(resources) }
       it "writes basePath correctly" do
-        expect(response["basePath"]).to eq "http://api.no.where/"
+        expect(response["basePath"]).to eq "http://api.no.where"
       end
       it "writes apis correctly" do
         expect(response["apis"].count).to eq 1
       end
       it "writes api path correctly" do
-        expect(response["apis"][0]["path"]).to eq "api/v1/sample.{format}"
+        expect(response["apis"][0]["path"]).to eq "/api/v1/sample.{format}"
       end
 
       context "api_file_name" do
@@ -72,7 +72,7 @@ describe Swagger::Docs::Generator do
       let(:operations) { first["operations"] }
       # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
       it "writes basePath correctly" do
-        expect(response["basePath"]).to eq "http://api.no.where/"
+        expect(response["basePath"]).to eq "http://api.no.where"
       end
       it "writes resourcePath correctly" do
         expect(response["resourcePath"]).to eq "sample"
@@ -84,7 +84,7 @@ describe Swagger::Docs::Generator do
         #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
         #,"method":"get","nickname":"Api::V1::Sample#index"}]
         it "writes path correctly" do
-          expect(first["path"]).to eq "api/v1/sample"
+          expect(first["path"]).to eq "/api/v1/sample"
         end
       end
     end
@@ -92,7 +92,7 @@ describe Swagger::Docs::Generator do
 
   context "with controller base path" do
     let(:config) { Swagger::Docs::Config.register_apis({
-       DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where",
+       DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where/",
        :attributes => {
           :info => {
             "title" => "Swagger Sample App",
@@ -193,13 +193,13 @@ describe Swagger::Docs::Generator do
           expect(response["swaggerVersion"]).to eq "1.2"
         end
         it "writes basePath correctly" do
-          expect(response["basePath"]).to eq "http://api.no.where/api/v1/"
+          expect(response["basePath"]).to eq "http://api.no.where/api/v1"
         end
         it "writes apis correctly" do
           expect(response["apis"].count).to eq 2
         end
         it "writes api path correctly" do
-          expect(response["apis"][0]["path"]).to eq "sample.{format}"
+          expect(response["apis"][0]["path"]).to eq "/sample.{format}"
         end
         it "writes api description correctly" do
           expect(response["apis"][0]["description"]).to eq "User Management"
@@ -211,8 +211,8 @@ describe Swagger::Docs::Generator do
         let(:apis) { response["apis"] }
         context "apis" do
           context "show" do
-            let(:api) { get_api_operation(apis, "nested/{nested_id}/nested_sample", :get) }
-            let(:operations) { get_api_operations(apis, "nested/{nested_id}/nested_sample") }
+            let(:api) { get_api_operation(apis, "/nested/{nested_id}/nested_sample", :get) }
+            let(:operations) { get_api_operations(apis, "/nested/{nested_id}/nested_sample") }
             context "parameters" do
               it "has correct count" do
                 expect(api["parameters"].count).to eq 2
@@ -233,7 +233,7 @@ describe Swagger::Docs::Generator do
           expect(response["swaggerVersion"]).to eq "1.2"
         end
         it "writes basePath correctly" do
-          expect(response["basePath"]).to eq "http://api.no.where/api/v1/"
+          expect(response["basePath"]).to eq "http://api.no.where/api/v1"
         end
         it "writes resourcePath correctly" do
           expect(response["resourcePath"]).to eq "sample"
@@ -262,17 +262,17 @@ describe Swagger::Docs::Generator do
         end
         context "apis" do
           context "index" do
-            let(:api) { get_api_operation(apis, "sample", :get) }
-            let(:operations) { get_api_operations(apis, "sample") }
+            let(:api) { get_api_operation(apis, "/sample", :get) }
+            let(:operations) { get_api_operations(apis, "/sample") }
             #"apis":[{"path":" /sample","operations":[{"summary":"Fetches all User items"
             #,"method":"get","nickname":"Api::V1::Sample#index"}]
             it "writes path correctly when api extension type is not set" do
-              expect(apis.first["path"]).to eq "sample"
+              expect(apis.first["path"]).to eq "/sample"
             end
             it "writes path correctly when api extension type is set" do
               config[DEFAULT_VER][:api_extension_type] = :json
               generate(config)
-              expect(apis.first["path"]).to eq "sample.json"
+              expect(apis.first["path"]).to eq "/sample.json"
             end
             it "writes summary correctly" do
               expect(operations.first["summary"]).to eq "Fetches all User items"
@@ -315,7 +315,7 @@ describe Swagger::Docs::Generator do
               end
             end
             context "list parameter" do
-              let(:api) { get_api_operation(apis, "sample", :patch) }
+              let(:api) { get_api_operation(apis, "/sample", :patch) }
               let(:params) {api["parameters"] }
               it "writes description correctly" do
                 expect(params[3]["description"]).to eq "Role"
@@ -339,7 +339,7 @@ describe Swagger::Docs::Generator do
             end
           end
           context "create" do
-            let(:api) { get_api_operation(apis, "sample", :patch) }
+            let(:api) { get_api_operation(apis, "/sample", :patch) }
             it "writes list parameter values correctly" do
               expected_param = {"valueType"=>"LIST", "values"=>["admin", "superadmin", "user"]}
               expected_body = {"paramType"=>"body", "name"=>"body", "type"=>"json", "description"=>"JSON formatted body", "required"=>true}
@@ -353,7 +353,7 @@ describe Swagger::Docs::Generator do
             end
           end
           context "update" do
-            let(:api) { get_api_operation(apis, "sample/{id}", :put) }
+            let(:api) { get_api_operation(apis, "/sample/{id}", :put) }
             it "writes notes correctly" do
               expect(api["notes"]).to eq "Only the given fields are updated."
             end
