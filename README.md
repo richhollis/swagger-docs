@@ -138,7 +138,7 @@ The following table shows all the current configuration options and their defaul
 <tr>
 <td><b>parent_controller</b></td>
 <td>Assign a different controller to use for the configuration</td>
-<td>ClassName</td>
+<td></td>
 </tr>
 
 </tbody>
