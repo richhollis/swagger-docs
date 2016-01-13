@@ -21,7 +21,8 @@ describe Swagger::Docs::Generator do
     stub_route(            "^DELETE$", "destroy", "api/v1/sample",  "/api/v1/sample/:id(.:format)"),
     stub_route(            "^GET$",    "new",     "api/v1/sample",  "/api/v1/sample/new(.:format)"), # no parameters for this method
     stub_route(            "^GET$",    "index",   "",               "/api/v1/empty_path"), # intentional empty path should not cause any errors
-    stub_route(            "^GET$",    "ignored", "api/v1/sample",  "/api/v1/ignored(.:format)") # an action without documentation should not cause any errors
+    stub_route(            "^GET$",    "ignored", "api/v1/sample",  "/api/v1/ignored(.:format)"), # an action without documentation should not cause any errors
+    stub_route(            "^GET|POST$","index",  "api/v1/sample",  "/api/v1/ignored(.:format)")
   ]}
 
   let(:tmp_dir) { Pathname.new('/tmp/swagger-docs/') }
