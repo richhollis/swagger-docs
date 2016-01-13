@@ -22,7 +22,7 @@ describe Swagger::Docs::Generator do
     stub_route(            "^GET$",    "new",     "api/v1/sample",  "/api/v1/sample/new(.:format)"), # no parameters for this method
     stub_route(            "^GET$",    "index",   "",               "/api/v1/empty_path"), # intentional empty path should not cause any errors
     stub_route(            "^GET$",    "ignored", "api/v1/sample",  "/api/v1/ignored(.:format)"), # an action without documentation should not cause any errors
-    stub_route(            "^GET|POST$","index",  "api/v1/sample",  "/api/v1/ignored(.:format)")
+    stub_route(            "^GET|POST$","index",  "api/v1/multiple_routes",  "/api/v1/multiple_routes(.:format)") # multiple route methods
   ]}
 
   let(:tmp_dir) { Pathname.new('/tmp/swagger-docs/') }
@@ -90,7 +90,6 @@ describe Swagger::Docs::Generator do
       end
     end
   end
-
   context "with controller base path" do
     let(:config) { Swagger::Docs::Config.register_apis({
        DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where/",
@@ -107,13 +106,16 @@ describe Swagger::Docs::Generator do
       }
     })}
     let(:file_resource) { tmp_dir + 'sample.json' }
+    let(:resource) { file_resource.read }
+    let(:response) { JSON.parse(resource) }
+    let(:apis) { response["apis"] }
     before(:each) do
       allow(Rails).to receive_message_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
       require "fixtures/controllers/sample_controller"
       require "fixtures/controllers/nested_controller"
+      require "fixtures/controllers/multiple_routes_controller"
     end
-
     context "test suite initialization" do
       it "the resources file does not exist" do
         expect(file_resource).to_not exist
@@ -122,7 +124,6 @@ describe Swagger::Docs::Generator do
         expect(file_resource).to_not exist
       end
     end
-
     describe "#write_docs" do
       context "no apis registered" do
         before(:each) do
@@ -130,7 +131,7 @@ describe Swagger::Docs::Generator do
         end
         it "generates using default config" do
           results = generate({})
-          expect(results[DEFAULT_VER][:processed].count).to eq 2
+          expect(results[DEFAULT_VER][:processed].count).to eq 3
         end
       end
       before(:each) do
@@ -175,7 +176,7 @@ describe Swagger::Docs::Generator do
       end
       it "returns results hash" do
         results = generate(config)
-        expect(results[DEFAULT_VER][:processed].count).to eq 2
+        expect(results[DEFAULT_VER][:processed].count).to eq 3
         expect(results[DEFAULT_VER][:skipped].count).to eq 1
       end
       it "writes pretty json files when set" do
@@ -197,7 +198,7 @@ describe Swagger::Docs::Generator do
           expect(response["basePath"]).to eq "http://api.no.where/api/v1"
         end
         it "writes apis correctly" do
-          expect(response["apis"].count).to eq 2
+          expect(response["apis"].count).to eq 3
         end
         it "writes api path correctly" do
           expect(response["apis"][0]["path"]).to eq "/sample.{format}"
@@ -222,10 +223,18 @@ describe Swagger::Docs::Generator do
           end
         end
       end
+      context "multiple routes resource file" do
+        let(:file_resource) { tmp_dir + 'multiple_routes.json' }
+        it "handles multiple GET path" do
+          resource = get_api_operation(apis, "/multiple_routes", :get)
+          expect(resource["method"]).to eq "get"
+        end
+        it "handles multiple POST path" do
+          resource = get_api_operation(apis, "/multiple_routes", :post)
+          expect(resource["method"]).to eq "post"
+        end
+      end
       context "sample resource file" do
-        let(:resource) { file_resource.read }
-        let(:response) { JSON.parse(resource) }
-        let(:apis) { response["apis"] }
         # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
         it "writes version correctly" do
           expect(response["apiVersion"]).to eq DEFAULT_VER
@@ -338,6 +347,9 @@ describe Swagger::Docs::Generator do
                 expect(response_msgs[1]["message"]).to eq "Unauthorized"
               end
             end
+          end
+          context "multiple route" do
+            let(:api) { get_api_operation(apis, "/sample", :patch) }
           end
           context "create" do
             let(:api) { get_api_operation(apis, "/sample", :patch) }

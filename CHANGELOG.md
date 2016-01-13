@@ -1,3 +1,7 @@
+## 0.2.2
+
+- Support multiple route methods #128 @frodrigo
+
 ## 0.2.1
 
 - Add support for Authorizations (OAuth 2.0) - Thanks to @RKushnir #97
