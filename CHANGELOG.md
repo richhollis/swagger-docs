@@ -1,3 +1,7 @@
+## 0.2.5
+
+- Enabled option to set 'items' inside swagger_api method #99 @krakatoa
+
 ## 0.2.4
 
 - Parent controller option for register_apis config. #123 @mskubenich

@@ -357,6 +357,7 @@ describe Swagger::Docs::Generator do
               expect(get_api_parameter(api, "role")["allowableValues"]).to eq expected_param
               expect(get_api_parameter(api, "body")).to eq expected_body
               expect(api["consumes"]).to eq ["application/json", "text/xml"]
+              expect(api["items"]).to eq("{$ref\" => \"setup\"}")
             end
             it "doesn't write out route put method" do
               expect(get_api_operation(apis, "sample", :put)).to be_nil

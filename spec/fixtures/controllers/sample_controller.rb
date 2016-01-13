@@ -31,6 +31,7 @@ module Api
         param :form, :email, :string, :required, "Email address"
         param_list :form, :role, :string, :required, "Role", [ "admin", "superadmin", "user" ]
         param :body, :body, :json, :required, 'JSON formatted body'
+        items '{$ref" => "setup"}'
         response :unauthorized
         response :not_acceptable
       end
