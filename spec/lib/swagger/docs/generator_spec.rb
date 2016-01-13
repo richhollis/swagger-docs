@@ -14,6 +14,7 @@ describe Swagger::Docs::Generator do
     stub_route(            "^GET$",    "index",   "api/v1/ignored", "/api/v1/ignored(.:format)"),
     stub_route(            "^GET$",    "index",   "api/v1/sample",  "/api/v1/sample(.:format)"),
     stub_string_verb_route("GET",      "index",   "api/v1/nested",  "/api/v1/nested/:nested_id/nested_sample(.:format)"),
+    stub_string_verb_route("GET",      "index",   "api/v1/custom_resource_path", "/api/v1/custom_resource_path/:custom_resource_path/custom_resource_path_sample(.:format)"),
     stub_route(            "^PATCH$",  "create",  "api/v1/sample",  "/api/v1/sample(.:format)"),
     stub_route(            "^PUT$",    "create",  "api/v1/sample",  "/api/v1/sample(.:format)"), # intentional duplicate of above route to ensure PATCH is used
     stub_route(            "^GET$",    "show",    "api/v1/sample",  "/api/v1/sample/:id(.:format)"),
@@ -29,6 +30,14 @@ describe Swagger::Docs::Generator do
   let(:file_resources) { tmp_dir + 'api-docs.json' }
   let(:file_resource) { tmp_dir + 'api/v1/sample.json' }
   let(:file_resource_nested) { tmp_dir + 'nested.json' }
+  let(:file_resource_custom_resource_path) { tmp_dir + 'custom_resource_path.json' }
+
+  let(:controllers) { [
+    "fixtures/controllers/sample_controller",
+    "fixtures/controllers/nested_controller",
+    "fixtures/controllers/custom_resource_path_controller",
+    "fixtures/controllers/multiple_routes_controller"
+  ]}
 
   context "without controller base path" do
     let(:config) {
@@ -112,9 +121,7 @@ describe Swagger::Docs::Generator do
     before(:each) do
       allow(Rails).to receive_message_chain(:application, :routes, :routes).and_return(routes)
       Swagger::Docs::Generator.set_real_methods
-      require "fixtures/controllers/sample_controller"
-      require "fixtures/controllers/nested_controller"
-      require "fixtures/controllers/multiple_routes_controller"
+      controllers.each{ |path| require path }
     end
     context "test suite initialization" do
       it "the resources file does not exist" do
@@ -131,7 +138,7 @@ describe Swagger::Docs::Generator do
         end
         it "generates using default config" do
           results = generate({})
-          expect(results[DEFAULT_VER][:processed].count).to eq 3
+          expect(results[DEFAULT_VER][:processed].count).to eq(controllers.count)
         end
       end
       before(:each) do
@@ -176,7 +183,7 @@ describe Swagger::Docs::Generator do
       end
       it "returns results hash" do
         results = generate(config)
-        expect(results[DEFAULT_VER][:processed].count).to eq 3
+        expect(results[DEFAULT_VER][:processed].count).to eq(controllers.count)
         expect(results[DEFAULT_VER][:skipped].count).to eq 1
       end
       it "writes pretty json files when set" do
@@ -198,7 +205,7 @@ describe Swagger::Docs::Generator do
           expect(response["basePath"]).to eq "http://api.no.where/api/v1"
         end
         it "writes apis correctly" do
-          expect(response["apis"].count).to eq 3
+          expect(response["apis"].count).to eq(controllers.count)
         end
         it "writes api path correctly" do
           expect(response["apis"][0]["path"]).to eq "/sample.{format}"
@@ -415,6 +422,15 @@ describe Swagger::Docs::Generator do
             expect(models['Tag']).to eq expected_model
           end
         end
+        context "custom resource_path resource file" do
+          let(:resource) { file_resource_custom_resource_path.read }
+          let(:response) { JSON.parse(resource) }
+          let(:apis) { response["apis"] }
+          # {"apiVersion":"1.0","swaggerVersion":"1.2","basePath":"/api/v1","resourcePath":"/sample"
+          it "writes resourcePath correctly" do
+            expect(response["resourcePath"]).to eq "resource/testing"
+          end
+       end
       end
     end
   end

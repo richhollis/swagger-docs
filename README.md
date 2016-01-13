@@ -141,8 +141,6 @@ The following table shows all the current configuration options and their defaul
 <td>ClassName</td>
 </tr>
 
-
-
 </tbody>
 </table>
 
@@ -217,6 +215,14 @@ end
 
 ```
 property_list :type, :string, :optional, "Type", ["info", "warning", "error"]
+```
+
+#### Custom resource paths`(PR #126)
+
+```ruby
+class Api::V1::UsersController < ApplicationController
+
+  swagger_controller :users, "User Management", resource_path: "/some/where"
 ```
 
 ### DRYing up common documentation

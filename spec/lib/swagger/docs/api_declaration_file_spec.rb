@@ -29,7 +29,6 @@ describe Swagger::Docs::ApiDeclarationFile do
       }
     ]
   end
-
   let(:models) do
     {
       :Tag=>
@@ -46,13 +45,11 @@ describe Swagger::Docs::ApiDeclarationFile do
       }
     }
   end
-
   let(:metadata) do
     Swagger::Docs::ApiDeclarationFileMetadata.new("1.0", "api/v1/sample", "http://api.no.where/", "")
   end
 
   describe "#generate_resource" do
-
     it "generates the appropriate response" do
       declaration = described_class.new(metadata, apis, models)
 
@@ -69,7 +66,6 @@ describe Swagger::Docs::ApiDeclarationFile do
       expect(declaration.generate_resource).to eq(expected_response)
     end
   end
-
   describe "#base_path" do
     it "returns metadata.base_path" do
       metadata = double("metadata", base_path: "/hello")
@@ -77,7 +73,6 @@ describe Swagger::Docs::ApiDeclarationFile do
       expect(declaration.base_path).to eq(metadata.base_path)
     end
   end
-
   describe "#path" do
     it "returns metadata.path" do
       metadata = double("metadata", path: "/hello")
@@ -85,7 +80,6 @@ describe Swagger::Docs::ApiDeclarationFile do
       expect(declaration.path).to eq(metadata.path)
     end
   end
-
   describe "#controller_base_path" do
     it "returns metadata.controller_base_path" do
       metadata = double("metadata", controller_base_path: "/hello")
@@ -93,7 +87,20 @@ describe Swagger::Docs::ApiDeclarationFile do
       expect(declaration.controller_base_path).to eq(metadata.controller_base_path)
     end
   end
-
+  describe "#resource_path" do
+    it "returns the debased controller path" do
+      metadata = double("metadata", overridden_resource_path: nil, controller_base_path: "/hello", path: "/hello/test-endpoint")
+      declaration = described_class.new(metadata, apis, models)
+      expect(declaration.resource_path).to eq("test_endpoint")
+   end
+   context "with an overridden_resource_path" do
+     it "returns the overriden resource path directly" do
+      metadata = double("metadata", overridden_resource_path: "testing-path", controller_base_path: "/hello", path: "/hello/test-endpoint")
+      declaration = described_class.new(metadata, apis, models)
+      expect(declaration.resource_path).to eq("testing-path")
+      end
+    end
+  end
   describe "#swagger_version" do
     it "returns metadata.swagger_version" do
       metadata = double("metadata", swagger_version: "1.2")
@@ -101,7 +108,6 @@ describe Swagger::Docs::ApiDeclarationFile do
       expect(declaration.swagger_version).to eq(metadata.swagger_version)
     end
   end
-
   describe "#api_version" do
     it "returns metadata.api_version" do
       metadata = double("metadata", api_version: "1.0")
@@ -109,7 +115,6 @@ describe Swagger::Docs::ApiDeclarationFile do
       expect(declaration.api_version).to eq(metadata.api_version)
     end
   end
-
   describe "#camelize_model_properties" do
     it "returns metadata.camelize_model_properties" do
       metadata = double("metadata", camelize_model_properties: false)
@@ -117,7 +122,6 @@ describe Swagger::Docs::ApiDeclarationFile do
       expect(declaration.camelize_model_properties).to eq(metadata.camelize_model_properties)
     end
   end
-
   describe "#models" do
     context "with camelize_model_properties set to true" do
       it "returns a models hash that's ready for output" do
@@ -141,7 +145,6 @@ describe Swagger::Docs::ApiDeclarationFile do
         expect(declaration.models).to eq(expected_models_hash)
       end
     end
-
     context "with camelize_model_properties set to false" do
       it "returns a models hash that's ready for output" do
         declaration = described_class.new(metadata, apis, models)
@@ -165,7 +168,6 @@ describe Swagger::Docs::ApiDeclarationFile do
       end
     end
   end
-
   describe "#apis" do
     it "returns a api hash that's ready for output" do
       declaration = described_class.new(metadata, apis, models)

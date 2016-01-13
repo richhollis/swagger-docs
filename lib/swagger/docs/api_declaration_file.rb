@@ -41,7 +41,7 @@ module Swagger
       end
 
       def resource_path
-        demod
+        metadata.overridden_resource_path || demod
       end
 
       def resource_file_path

@@ -10,6 +10,7 @@ module Swagger
         def swagger_controller(controller, description, params = {})
           swagger_config[:controller] = controller
           swagger_config[:description] = description
+          swagger_config[:resource_path] = params[:resource_path]
         end
 
         def swagger_actions

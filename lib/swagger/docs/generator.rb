@@ -75,7 +75,7 @@ module Swagger
             ret = process_path(path, root, config, settings)
             results[ret[:action]] << ret
             if ret[:action] == :processed
-              resources << generate_resource(ret[:path], ret[:apis], ret[:models], settings, root, config)
+              resources << generate_resource(ret[:path], ret[:apis], ret[:models], settings, root, config, ret[:klass].swagger_config)
               debased_path = get_debased_path(ret[:path], settings[:controller_base_path])
               resource_api = {
                 path: "/#{Config.transform_path(trim_leading_slash(debased_path), api_version)}.{format}",
@@ -164,13 +164,14 @@ module Swagger
           false
         end
 
-        def generate_resource(path, apis, models, settings, root, config)
+        def generate_resource(path, apis, models, settings, root, config, swagger_config)
           metadata = ApiDeclarationFileMetadata.new(
             root["apiVersion"], path, root["basePath"],
             settings[:controller_base_path],
             camelize_model_properties: config.fetch(:camelize_model_properties, true),
             swagger_version: root["swaggerVersion"],
-            authorizations: root[:authorizations]
+            authorizations: root[:authorizations],
+            resource_path: swagger_config[:resource_path]
           )
           declaration = ApiDeclarationFile.new(metadata, apis, models)
           declaration.generate_resource

@@ -1,3 +1,7 @@
+## 0.2.6
+
+- swagger_controller DSL can accept a resource_path which will be used over a generated path #126 @sb8244
+
 ## 0.2.5
 
 - Enabled option to set 'items' inside swagger_api method #99 @krakatoa
