@@ -198,6 +198,7 @@ class Api::V1::UsersController < ApplicationController
     description "A Tag object."
     property :id, :integer, :required, "User Id"
     property :name, :string, :optional, "Name"
+    property_list :type, :string, :optional, "Tag Type", ["info", "warning", "error"]
   end
 
 end

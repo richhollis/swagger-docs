@@ -73,6 +73,7 @@ module Api
         description "A Tag object."
         property :id, :integer, :required, "User Id"
         property :name, :string, :optional, "Name", foo: "test"
+        property_list :type, :string, :optional, "Type", ["info", "warning", "error"]
       end
     end
   end
