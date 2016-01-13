@@ -348,9 +348,6 @@ describe Swagger::Docs::Generator do
               end
             end
           end
-          context "multiple route" do
-            let(:api) { get_api_operation(apis, "/sample", :patch) }
-          end
           context "create" do
             let(:api) { get_api_operation(apis, "/sample", :patch) }
             it "writes list parameter values correctly" do
