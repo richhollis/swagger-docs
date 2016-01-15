@@ -5,8 +5,6 @@ describe Swagger::Docs::Generator do
   require "fixtures/controllers/application_controller"
   require "fixtures/controllers/ignored_controller"
 
-  class FooParentController; end
-
   before(:each) do
     FileUtils.rm_rf(tmp_dir)
     stub_const('ActionController::Base', ApplicationController)
