@@ -1,3 +1,7 @@
+## 0.2.7
+
+- Fix issue "NoMethodError: undefined method `<' for false:FalseClass" (#133) - thanks to @heaven
+
 ## 0.2.6
 
 - swagger_controller DSL can accept a resource_path which will be used over a generated path #126 @sb8244

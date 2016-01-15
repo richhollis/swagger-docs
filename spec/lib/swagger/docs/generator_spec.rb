@@ -5,6 +5,8 @@ describe Swagger::Docs::Generator do
   require "fixtures/controllers/application_controller"
   require "fixtures/controllers/ignored_controller"
 
+  class FooParentController; end
+
   before(:each) do
     FileUtils.rm_rf(tmp_dir)
     stub_const('ActionController::Base', ApplicationController)
@@ -34,7 +36,9 @@ describe Swagger::Docs::Generator do
 
   let(:default_config) { 
     {
-      :controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where/",
+      :controller_base_path => "api/v1", 
+      :api_file_path => "#{tmp_dir}", 
+      :base_path => "http://api.no.where/",
       :attributes => {
         :info => {
           "title" => "Swagger Sample App",
@@ -132,6 +136,15 @@ describe Swagger::Docs::Generator do
       end
       it "the resource file does not exist" do
         expect(file_resource).to_not exist
+      end
+    end
+    describe "#generate" do
+      it "respects parent_controller config option" do
+        new_config = default_config
+        new_config[:parent_controller] = ApplicationController
+        api_config = Swagger::Docs::Config.register_apis(DEFAULT_VER => new_config)
+        results = generate(api_config)
+        expect(results[DEFAULT_VER][:processed].count).to eq(controllers.count)
       end
     end
     describe "#write_docs" do
