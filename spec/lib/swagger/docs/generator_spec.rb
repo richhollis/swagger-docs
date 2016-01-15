@@ -32,6 +32,22 @@ describe Swagger::Docs::Generator do
   let(:file_resource_nested) { tmp_dir + 'nested.json' }
   let(:file_resource_custom_resource_path) { tmp_dir + 'custom_resource_path.json' }
 
+  let(:default_config) { 
+    {
+      :controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where/",
+      :attributes => {
+        :info => {
+          "title" => "Swagger Sample App",
+          "description" => "This is a sample description.",
+          "termsOfServiceUrl" => "http://helloreverb.com/terms/",
+          "contact" => "apiteam@wordnik.com",
+          "license" => "Apache 2.0",
+          "licenseUrl" => "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+      } 
+    }
+  }
+
   let(:controllers) { [
     "fixtures/controllers/sample_controller",
     "fixtures/controllers/nested_controller",
@@ -100,20 +116,7 @@ describe Swagger::Docs::Generator do
     end
   end
   context "with controller base path" do
-    let(:config) { Swagger::Docs::Config.register_apis({
-       DEFAULT_VER => {:controller_base_path => "api/v1", :api_file_path => "#{tmp_dir}", :base_path => "http://api.no.where/",
-       :attributes => {
-          :info => {
-            "title" => "Swagger Sample App",
-            "description" => "This is a sample description.",
-            "termsOfServiceUrl" => "http://helloreverb.com/terms/",
-            "contact" => "apiteam@wordnik.com",
-            "license" => "Apache 2.0",
-            "licenseUrl" => "http://www.apache.org/licenses/LICENSE-2.0.html"
-         }
-        } 
-      }
-    })}
+    let(:config) { Swagger::Docs::Config.register_apis({DEFAULT_VER => default_config})}
     let(:file_resource) { tmp_dir + 'sample.json' }
     let(:resource) { file_resource.read }
     let(:response) { JSON.parse(resource) }
