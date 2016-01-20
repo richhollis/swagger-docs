@@ -1,3 +1,7 @@
+## 0.2.8
+
+Accept success status (#134) - thanks to @dcarneiro
+
 ## 0.2.7
 
 - Fix issue "NoMethodError: undefined method `<' for false:FalseClass" (#133) - thanks to @heaven
