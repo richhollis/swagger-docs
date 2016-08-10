@@ -32,10 +32,10 @@ describe Swagger::Docs::Generator do
   let(:file_resource_nested) { tmp_dir + 'nested.json' }
   let(:file_resource_custom_resource_path) { tmp_dir + 'custom_resource_path.json' }
 
-  let(:default_config) { 
+  let(:default_config) {
     {
-      :controller_base_path => "api/v1", 
-      :api_file_path => "#{tmp_dir}", 
+      :controller_base_path => "api/v1",
+      :api_file_path => "#{tmp_dir}",
       :base_path => "http://api.no.where/",
       :attributes => {
         :info => {
@@ -46,7 +46,7 @@ describe Swagger::Docs::Generator do
           "license" => "Apache 2.0",
           "licenseUrl" => "http://www.apache.org/licenses/LICENSE-2.0.html"
         }
-      } 
+      }
     }
   }
 
@@ -448,4 +448,29 @@ describe Swagger::Docs::Generator do
       end
     end
   end
+
+  context "base path tests" do
+    before(:each) do
+      allow(Rails).to receive_message_chain(:application, :routes, :routes).and_return(routes)
+      Swagger::Docs::Generator.set_real_methods
+      require "fixtures/controllers/sample_controller"
+    end
+
+    let(:resources) { file_resources.read }
+    let(:response) { JSON.parse(resources) }
+    let(:apis) { response["apis"] }
+
+    it "default basePath = '/'" do
+      config = {DEFAULT_VER => {:api_file_path => "#{tmp_dir}"}}#, :base_path => "http://api.no.where/"}}
+      generate(config)
+      expect(response['basePath']).to eq '/'
+    end
+
+    it "explicit '/' basePath = '/'" do
+      config = {DEFAULT_VER => {:api_file_path => "#{tmp_dir}", :base_path => "/"}}
+      generate(config)
+      expect(response['basePath']).to eq '/'
+    end
+  end
+
 end
