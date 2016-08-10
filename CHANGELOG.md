@@ -1,3 +1,7 @@
+## 0.2.9
+
+Fix gem dependencies to support Rails 5 #141
+
 ## 0.2.8
 
 Accept success status (#134) - thanks to @dcarneiro
