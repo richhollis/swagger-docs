@@ -51,8 +51,8 @@ module Swagger
           apis[DEFAULT_VER] = DEFAULT_CONFIG if apis.empty?
 
           apis.each do |api_version, config|
-            settings = get_settings(api_version, config)
             config.reverse_merge!(DEFAULT_CONFIG)
+            settings = get_settings(api_version, config)
             results[api_version] = generate_doc(api_version, settings, config)
             results[api_version][:settings] = settings
             results[api_version][:config] = config
