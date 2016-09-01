@@ -209,9 +209,9 @@ module Swagger
           klass.swagger_models.each do |model_name, model|
             formatted_model = {
               id: model[:id],
-              required: model[:required],
               properties: model[:properties],
             }
+            formatted_model[:required] = model[:required] if model[:required]
             formatted_model[:description] = model[:description] if model[:description]
             models[model[:id]] = formatted_model
           end

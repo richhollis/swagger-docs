@@ -76,6 +76,11 @@ module Api
         property :name, :string, :optional, "Name", foo: "test"
         property_list :type, :string, :optional, "Type", ["info", "warning", "error"]
       end
+
+      swagger_model :OptionalTag do
+        description "A Tag object with no required property."
+        property :name, :string, :optional, "Name", foo: "test"
+      end
     end
   end
 end
