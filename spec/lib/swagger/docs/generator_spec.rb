@@ -435,7 +435,12 @@ describe Swagger::Docs::Generator do
             }
             expect(models['Tag']).to eq expected_model
           end
+
+          it "should not have required field when no property is required" do
+            expect(models['OptionalTag'].has_key?('required')).to eq false
+          end
         end
+
         context "custom resource_path resource file" do
           let(:resource) { file_resource_custom_resource_path.read }
           let(:response) { JSON.parse(resource) }
