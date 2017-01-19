@@ -277,7 +277,7 @@ class Api::V1::UserController < Api::V1::BaseController
     response :not_acceptable
     response :unprocessable_entity
   end
-  
+
   swagger_api :update do |api|
     summary "Update an existing User item"
     Api::V1::UserController::add_common_params(api)
@@ -322,6 +322,11 @@ end
 <tr>
 <td>response</td>
 <td>Takes a symbol or status code and passes it to `Rack::Utils.status_code`. The current list of status codes can be seen here: https://github.com/rack/rack/blob/master/lib/rack/utils.rb. An optional message can be added.</td>
+</tr>
+
+<tr>
+<td>consumes</td>
+<td>Custom list of MIME types the API can consume. This overrides global settings for the specific API call.</td>
 </tr>
 
 </tbody>
@@ -384,7 +389,7 @@ end
 ```
 
 If you want swagger to find controllers in `Rails.application` and/or multiple
-engines you can override `base_application` to return an array. 
+engines you can override `base_application` to return an array.
 
 ```ruby
 class Swagger::Docs::Config
