@@ -87,11 +87,11 @@ describe Swagger::Docs::ApiDeclarationFile do
       expect(declaration.controller_base_path).to eq(metadata.controller_base_path)
     end
   end
-  describe "#swagger_document_root" do
-    it "returns metadata.swagger_document_root" do
-      metadata = double("metadata", swagger_document_root: "/foobie")
+  describe "#api_document_root" do
+    it "returns metadata.api_document_root" do
+      metadata = double("metadata", api_document_root: "/foobie")
       declaration = described_class.new(metadata, apis, models)
-      expect(declaration.swagger_document_root).to eq(metadata.swagger_document_root)
+      expect(declaration.api_document_root).to eq(metadata.api_document_root)
     end
   end
   describe "#resource_path" do

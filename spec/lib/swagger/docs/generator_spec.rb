@@ -474,7 +474,7 @@ describe Swagger::Docs::Generator do
     end
 
     it "swagger document root '/swagger' basePath = '/'" do
-      config = {DEFAULT_VER => {swagger_document_root: '/swagger', :api_file_path => "#{tmp_dir}", :base_path => "/"}}
+      config = {DEFAULT_VER => {api_document_root: '/swagger', :api_file_path => "#{tmp_dir}", :base_path => "/"}}
       generate(config)
       # expect(response).to eq '/swagger'
       expect(response['apis'].first['path']).to eq '/swagger/api/v1/sample.{format}'
