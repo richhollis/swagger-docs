@@ -7,6 +7,7 @@ describe Swagger::Docs::Generator do
 
   before(:each) do
     FileUtils.rm_rf(tmp_dir)
+    FileUtils.mkdir(tmp_dir)
     stub_const('ActionController::Base', ApplicationController)
   end
 
@@ -470,6 +471,13 @@ describe Swagger::Docs::Generator do
       config = {DEFAULT_VER => {:api_file_path => "#{tmp_dir}", :base_path => "/"}}
       generate(config)
       expect(response['basePath']).to eq '/'
+    end
+
+    it "swagger document root '/swagger' basePath = '/'" do
+      config = {DEFAULT_VER => {swagger_document_root: '/swagger', :api_file_path => "#{tmp_dir}", :base_path => "/"}}
+      generate(config)
+      # expect(response).to eq '/swagger'
+      expect(response['apis'].first['path']).to eq '/swagger/api/v1/sample.{format}'
     end
   end
 

@@ -36,6 +36,10 @@ module Swagger
         metadata.controller_base_path
       end
 
+      def swagger_document_root
+        metadata.swagger_document_root
+      end
+
       def camelize_model_properties
         metadata.camelize_model_properties
       end
