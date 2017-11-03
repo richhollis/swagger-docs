@@ -1,3 +1,5 @@
+require "rack/utils"
+
 module Swagger
   module Docs
     class SwaggerDSL
