@@ -1,4 +1,3 @@
-require "rails"
 require "swagger/docs"
 require "ostruct"
 require "json"

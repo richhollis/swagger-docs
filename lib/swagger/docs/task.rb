@@ -1,3 +1,5 @@
+require "rails/railtie"
+
 module Swagger
   module Docs
     class Task < Rails::Railtie

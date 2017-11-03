@@ -26,6 +26,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3"
   spec.add_development_dependency "appraisal", "~> 1"
 
-  spec.add_runtime_dependency "rails", ">= 3"
+  spec.add_runtime_dependency "railties", ">= 3"
+  spec.add_runtime_dependency "actionpack", ">= 3"
   spec.add_runtime_dependency "activesupport", ">= 3"
+  spec.add_runtime_dependency "rack"
 end

@@ -1,3 +1,6 @@
+require "rails"
+require "action_controller"
+
 module Swagger
   module Docs
     class Config
